@@ -106,5 +106,4 @@ Pits --> REBOOTING
 Bad_Card --> REBOOTING
 "Robot(Player)" --> "Registry"
 
-
 @enduml
