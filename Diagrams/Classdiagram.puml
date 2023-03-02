@@ -1,0 +1,110 @@
+@startuml ClassDiagram_v3
+
+class "Game" as Game {
+}
+
+class "Obstacles" as Obstacles {
+}
+
+class "Robot(Player)" as Robot(Player) {
+}
+
+class "Upgrade Phase" as Upgrade_Phase {
+}
+
+class "Programming Phase" as Programming_Phase {
+}
+
+class "Activation Phase" as Activation_Phase {
+}
+
+class "Cards" as Cards {
+}
+
+class "Blue Conveyor Belts" as Blue_Conveyor_Belts{
+}
+
+class "Green Conveyor Belts" as Green_Conveyor_Belts{
+}
+
+class "Lasers" as Lasers{
+}
+
+class "Push Panels" as Push_Panels{
+}
+
+class "Gears" as Gears{
+}
+
+class "Energy Space" as Energy_Space{
+}
+
+class "Checkpoint" as Checkpoint{
+}
+
+class "Temporary Upgrades" as Temporary_Upgrades {
+}
+
+class "Board" as Board {
+}
+
+class "Phases" as Phases {
+}
+
+class "Collectables" as Collectables {
+}
+
+class "Good Cards" as Good_Cards {
+}
+
+class "Bad Cards" as Bad_Card {
+}
+
+class "Walls" as Walls {
+}
+
+class "Pits" as Pits {
+}
+
+class "Priority Antenna" as Priority_Antenna {
+}
+
+class "Permanent Upgrades" as Permanent_Upgrades {
+}
+
+class "REBOOTING" as REBOOTING {
+}
+
+class "Registry" as Registry {
+}
+
+Game --> "1""Board"
+Game --> "2...8""Robot(Player)"
+Board --> Obstacles
+Obstacles --> Push_Panels
+Obstacles --> Lasers
+Obstacles --> Green_Conveyor_Belts
+Obstacles --> Blue_Conveyor_Belts
+Obstacles --> "Gears"
+"Robot(Player)" --> "Cards"
+"Robot(Player)" --> Temporary_Upgrades
+Game --> Phases
+Board --> Collectables
+Collectables --> Energy_Space
+Phases --> Activation_Phase
+Phases --> Upgrade_Phase
+Phases --> Programming_Phase
+Programming_Phase <--> Cards
+Board --> Checkpoint
+Cards --> "2"Good_Cards
+Cards --> Bad_Card
+Obstacles --> Walls
+Obstacles --> Pits
+Obstacles --> Priority_Antenna
+"Robot(Player)" --> Permanent_Upgrades
+Pits --> REBOOTING
+Bad_Card --> REBOOTING
+"Robot(Player)" --> "Registry"
+
+
+@enduml
