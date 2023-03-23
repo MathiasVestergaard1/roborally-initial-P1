@@ -98,7 +98,7 @@ public class AppController implements Observer {
     }
 
     public void loadGame() {
-        // XXX needs to be implemented eventually
+        // XXX needs to be implememted eventually
         // for now, we just create a new game
         if (gameController == null) {
             newGame();

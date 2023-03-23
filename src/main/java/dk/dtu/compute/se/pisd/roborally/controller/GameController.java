@@ -52,26 +52,15 @@ public class GameController {
         //     following the current player
         //   - the counter of moves in the game should be increased by one
         //     if the player is moved
-        Player Test = space.getPlayer();
-        Player currentplayer = board.getCurrentPlayer();
-        if (Test == null){
-            space.setPlayer(currentplayer);
-            currentplayer.setSpace(space);
-            int Step = board.getStep();
-            board.setStep(Step+1);
+
+        if (space != null && space.board == board) {
+            Player currentPlayer = board.getCurrentPlayer();
+            if (currentPlayer != null && space.getPlayer() == null) {
+                currentPlayer.setSpace(space);
+                int playerNumber = (board.getPlayerNumber(currentPlayer) + 1) % board.getPlayersNumber();
+                board.setCurrentPlayer(board.getPlayer(playerNumber));
+            }
         }
-        else {
-            this.moveCurrentPlayerToSpace(space);
-            return;
-        }
-        int Playercount = board.getPlayersNumber();
-        int Currentplayernumber = board.getPlayerNumber(currentplayer);
-        int NextPlayerNumber = 0;
-        if (Currentplayernumber < Playercount-1){
-            NextPlayerNumber = Currentplayernumber + 1;
-        }
-        Player nextPlayer = board.getPlayer(NextPlayerNumber);
-        board.setCurrentPlayer(nextPlayer);
 
     }
 
@@ -215,44 +204,39 @@ public class GameController {
         }
     }
 
-    // TODO Assignment V2
+    // TODO: V2
     public void moveForward(@NotNull Player player) {
-        Space currentSpace = player.getSpace();
-        Heading currentHeading = player.getHeading();
-
-        Space nextSpace = board.getNeighbour(currentSpace, currentHeading);
-
-        player.setSpace(nextSpace);
+        Space space = player.getSpace();
+        if (player != null && player.board == board && space != null) {
+            Heading heading = player.getHeading();
+            Space target = board.getNeighbour(space, heading);
+            if (target != null) {
+                // XXX note that this removes an other player from the space, when there
+                //     is another player on the target. Eventually, this needs to be
+                //     implemented in a way so that other players are pushed away!
+                target.setPlayer(player);
+            }
+        }
     }
 
-    // TODO Assignment V2
+    // TODO: V2
     public void fastForward(@NotNull Player player) {
-        Space currentSpace = player.getSpace();
-        Heading currentHeading = player.getHeading();
-
-        Space nextSpace = board.getNeighbour(currentSpace, currentHeading);
-        Space nextnextSpace = board.getNeighbour(nextSpace, currentHeading);
-
-        player.setSpace(nextnextSpace);
-
+        moveForward(player);
+        moveForward(player);
     }
 
-    // TODO Assignment V2
+    // TODO: V2
     public void turnRight(@NotNull Player player) {
-        Heading currentHeading = player.getHeading();
-
-        Heading nextHeading = currentHeading.next();
-
-        player.setHeading(nextHeading);
+        if (player != null && player.board == board) {
+            player.setHeading(player.getHeading().next());
+        }
     }
 
-    // TODO Assignment V2
+    // TODO: V2
     public void turnLeft(@NotNull Player player) {
-        Heading currentHeading = player.getHeading();
-
-        Heading nextHeading = currentHeading.prev();
-
-        player.setHeading(nextHeading);
+        if (player != null && player.board == board) {
+            player.setHeading(player.getHeading().prev());
+        }
     }
 
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
