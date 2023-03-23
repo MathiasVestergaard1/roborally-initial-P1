@@ -217,22 +217,42 @@ public class GameController {
 
     // TODO Assignment V2
     public void moveForward(@NotNull Player player) {
+        Space currentSpace = player.getSpace();
+        Heading currentHeading = player.getHeading();
 
+        Space nextSpace = board.getNeighbour(currentSpace, currentHeading);
+
+        player.setSpace(nextSpace);
     }
 
     // TODO Assignment V2
     public void fastForward(@NotNull Player player) {
+        Space currentSpace = player.getSpace();
+        Heading currentHeading = player.getHeading();
+
+        Space nextSpace = board.getNeighbour(currentSpace, currentHeading);
+        Space nextnextSpace = board.getNeighbour(nextSpace, currentHeading);
+
+        player.setSpace(nextnextSpace);
 
     }
 
     // TODO Assignment V2
     public void turnRight(@NotNull Player player) {
+        Heading currentHeading = player.getHeading();
 
+        Heading nextHeading = currentHeading.next();
+
+        player.setHeading(nextHeading);
     }
 
     // TODO Assignment V2
     public void turnLeft(@NotNull Player player) {
+        Heading currentHeading = player.getHeading();
 
+        Heading nextHeading = currentHeading.prev();
+
+        player.setHeading(nextHeading);
     }
 
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
