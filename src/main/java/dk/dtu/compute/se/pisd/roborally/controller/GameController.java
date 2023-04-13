@@ -198,6 +198,9 @@ public class GameController {
                 case FAST_FORWARD:
                     this.fastForward(player);
                     break;
+                case OPTION_LEFT_RIGHT:
+                    this.optionCard();
+                    break;
                 default:
                     // DO NOTHING (for now)
             }
@@ -239,6 +242,10 @@ public class GameController {
         }
     }
 
+    public void optionCard() {
+        board.setPhase(Phase.PLAYER_INTERACTION);
+    }
+
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
         CommandCard targetCard = target.getCard();
@@ -249,6 +256,11 @@ public class GameController {
         } else {
             return false;
         }
+    }
+
+    public void choseLeft(Player player) {
+        this.turnLeft(player);
+        board.setPhase(Phase.ACTIVATION);
     }
 
     /**
