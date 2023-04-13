@@ -19,10 +19,12 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-package dk.dtu.compute.se.pisd.roborally.model;
+package dk.dtu.compute.se.pisd.roborally.fileaccess.model;
 
-import java.util.Arrays;
-import java.util.Collections;
+import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
+import dk.dtu.compute.se.pisd.roborally.model.Heading;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,32 +33,12 @@ import java.util.List;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
-public enum Command {
+public class SpaceTemplate {
 
-    // This is a very simplistic way of realizing different commands.
+    public List<Heading> walls = new ArrayList<>();
+    public List<FieldAction> actions = new ArrayList<>();
 
-    FORWARD("Fwd"),
-    RIGHT("Turn Right"),
-    LEFT("Turn Left"),
-    FAST_FORWARD("Fast Fwd"),
-
-    OPTION_LEFT_RIGHT("Left OR Right", LEFT, RIGHT);
-
-    final public String displayName;
-
-    final private List<Command> options;
-
-    Command(String displayName, Command... options) {
-        this.displayName = displayName;
-        this.options = Collections.unmodifiableList(Arrays.asList(options));
-    }
-
-    public boolean isInteractive() {
-        return !options.isEmpty();
-    }
-
-    public List<Command> getOptions() {
-        return options;
-    }
+    public int x;
+    public int y;
 
 }

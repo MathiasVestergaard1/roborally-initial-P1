@@ -19,11 +19,13 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-package dk.dtu.compute.se.pisd.roborally.model;
+package dk.dtu.compute.se.pisd.roborally.controller;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import dk.dtu.compute.se.pisd.roborally.model.Board;
+import dk.dtu.compute.se.pisd.roborally.model.Heading;
+import dk.dtu.compute.se.pisd.roborally.model.Player;
+import dk.dtu.compute.se.pisd.roborally.model.Space;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * ...
@@ -31,32 +33,22 @@ import java.util.List;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
-public enum Command {
+public class ConveyorBelt extends FieldAction {
 
-    // This is a very simplistic way of realizing different commands.
+    private Heading heading;
 
-    FORWARD("Fwd"),
-    RIGHT("Turn Right"),
-    LEFT("Turn Left"),
-    FAST_FORWARD("Fast Fwd"),
-
-    OPTION_LEFT_RIGHT("Left OR Right", LEFT, RIGHT);
-
-    final public String displayName;
-
-    final private List<Command> options;
-
-    Command(String displayName, Command... options) {
-        this.displayName = displayName;
-        this.options = Collections.unmodifiableList(Arrays.asList(options));
+    public Heading getHeading() {
+        return heading;
     }
 
-    public boolean isInteractive() {
-        return !options.isEmpty();
+    public void setHeading(Heading heading) {
+        this.heading = heading;
     }
 
-    public List<Command> getOptions() {
-        return options;
+    @Override
+    public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
+        // TODO needs to be implemented
+        return false;
     }
 
 }

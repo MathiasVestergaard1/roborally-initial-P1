@@ -19,11 +19,9 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-package dk.dtu.compute.se.pisd.roborally.model;
+package dk.dtu.compute.se.pisd.roborally.controller;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import dk.dtu.compute.se.pisd.roborally.model.Space;
 
 /**
  * ...
@@ -31,32 +29,16 @@ import java.util.List;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
-public enum Command {
+public abstract class FieldAction {
 
-    // This is a very simplistic way of realizing different commands.
-
-    FORWARD("Fwd"),
-    RIGHT("Turn Right"),
-    LEFT("Turn Left"),
-    FAST_FORWARD("Fast Fwd"),
-
-    OPTION_LEFT_RIGHT("Left OR Right", LEFT, RIGHT);
-
-    final public String displayName;
-
-    final private List<Command> options;
-
-    Command(String displayName, Command... options) {
-        this.displayName = displayName;
-        this.options = Collections.unmodifiableList(Arrays.asList(options));
-    }
-
-    public boolean isInteractive() {
-        return !options.isEmpty();
-    }
-
-    public List<Command> getOptions() {
-        return options;
-    }
+    /**
+     * Executes the field action for a given space. In order to be able to do
+     * that the GameController associated with the game is passed to this method.
+     *
+     * @param gameController the gameController of the respective game
+     * @param space the space this action should be executed for
+     * @return whether the action was successfully executed
+     */
+    public abstract boolean doAction(GameController gameController, Space space);
 
 }
