@@ -151,6 +151,10 @@ public class GameController {
             int step = board.getStep();
             if (step >= 0 && step < Player.NO_REGISTERS) {
                 CommandCard card = currentPlayer.getProgramField(step).getCard();
+                if (card != null && card.command == Command.OPTION_LEFT_RIGHT) {
+                    this.optionCard();
+                    return;
+                }
                 if (card != null) {
                     Command command = card.command;
                     executeCommand(currentPlayer, command);
@@ -198,9 +202,6 @@ public class GameController {
                 case FAST_FORWARD:
                     this.fastForward(player);
                     break;
-                case OPTION_LEFT_RIGHT:
-                    this.optionCard();
-                    break;
                 default:
                     // DO NOTHING (for now)
             }
@@ -217,6 +218,12 @@ public class GameController {
                 // XXX note that this removes an other player from the space, when there
                 //     is another player on the target. Eventually, this needs to be
                 //     implemented in a way so that other players are pushed away!
+                Space target2; // = 
+                /* Check om der allerede er en spiller på target. (player2)
+                * Hvis ja, så skal den spiller fløttes i samme heading en gang.
+                * dvs. Man skal kalde board.getNeighbour med target(det space der er "optaget") og heading (som spilleren havede)
+                * Til sidst skal der kaldes target2.setPlayer(player2) og target.setPlayer(player);
+                * */
                 target.setPlayer(player);
             }
         }
@@ -258,9 +265,28 @@ public class GameController {
         }
     }
 
-    public void choseLeft(Player player) {
-        this.turnLeft(player);
+    public void choose(Player player, Command option) {
         board.setPhase(Phase.ACTIVATION);
+
+        switch (option) {
+            case LEFT -> this.turnLeft(player);
+            case RIGHT -> this.turnRight(player);
+        }
+
+        int step = board.getStep();
+        int nextPlayerNumber = board.getPlayerNumber(player) + 1;
+        if (nextPlayerNumber < board.getPlayersNumber()) {
+            board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
+        } else {
+            step++;
+            if (step < Player.NO_REGISTERS) {
+                makeProgramFieldsVisible(step);
+                board.setStep(step);
+                board.setCurrentPlayer(board.getPlayer(0));
+            } else {
+                startProgrammingPhase();
+            }
+        }
     }
 
     /**
