@@ -218,7 +218,7 @@ public class GameController {
                 // XXX note that this removes an other player from the space, when there
                 //     is another player on the target. Eventually, this needs to be
                 //     implemented in a way so that other players are pushed away!
-                Space target2; // = 
+                Space target2; // =
                 /* Check om der allerede er en spiller på target. (player2)
                 * Hvis ja, så skal den spiller fløttes i samme heading en gang.
                 * dvs. Man skal kalde board.getNeighbour med target(det space der er "optaget") og heading (som spilleren havede)
