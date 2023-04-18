@@ -24,6 +24,9 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 /**
  * ...
  *
@@ -213,19 +216,37 @@ public class GameController {
         Space space = player.getSpace();
         if (player != null && player.board == board && space != null) {
             Heading heading = player.getHeading();
-            Space target = board.getNeighbour(space, heading);
-            if (target != null) {
+
+            ArrayList<Space> spacelist = new ArrayList<Space>();
+            spacelist.add(space);
+
+            while (true) {
+                Space nexttarget = board.getNeighbour(space, heading);
+                if (nexttarget != null && space.getPlayer() != null) {
+                    spacelist.add(nexttarget);
+                    space = nexttarget;
+                } else {
+                    break;
+                }
+            }
+               for(int i=spacelist.size()-1; i>=0; i--){
+                 Space somespace = spacelist.get(i);
+                 Player someplayer = somespace.getPlayer();
+                 Space neighbortarget = board.getNeighbour(somespace, heading);
+                 if (neighbortarget != null) {
+                     neighbortarget.setPlayer(someplayer);
+                 }
+               }
+
                 // XXX note that this removes an other player from the space, when there
                 //     is another player on the target. Eventually, this needs to be
-                //     implemented in a way so that other players are pushed away!
-                Space target2; // =
+                //     implemented in a way so that other players are pushed away
+
                 /* Check om der allerede er en spiller på target. (player2)
                 * Hvis ja, så skal den spiller fløttes i samme heading en gang.
                 * dvs. Man skal kalde board.getNeighbour med target(det space der er "optaget") og heading (som spilleren havede)
                 * Til sidst skal der kaldes target2.setPlayer(player2) og target.setPlayer(player);
                 * */
-                target.setPlayer(player);
-            }
         }
     }
 
