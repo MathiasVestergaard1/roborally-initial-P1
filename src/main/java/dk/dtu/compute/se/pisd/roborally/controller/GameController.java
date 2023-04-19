@@ -68,6 +68,14 @@ public class GameController {
     }
 
     // XXX: V2
+    /**
+     * This is a method that starts the game programming pahse of a board.
+     * The method then goes through each palyer in the game and performs the following actions.
+     * For each register a palyer can program a command for their robot to execute.
+     * For each card in a players hand the method sets the CommandCardfields to have a randomly generated command card and be visible.
+     * The actions set up the initial state of the programming phase, were payers are programming their robots to execute a series of commands.
+     * The game ensure that each player starts on an equal footing.   
+     */
     public void startProgrammingPhase() {
         board.setPhase(Phase.PROGRAMMING);
         board.setCurrentPlayer(board.getPlayer(0));
