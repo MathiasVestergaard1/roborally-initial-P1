@@ -281,7 +281,13 @@ public class GameController {
         }
     }
 
-    // TODO: V2
+    /**
+     * This code is used as a way to move the player forward.
+     * This is done by getting both the heading and space that the player is at.
+     * If there is a player on the given space they will be moved in the direction they are pushed.
+     * @param player the player that should be moved
+     * @author Mads Rasmussen
+     */
     public void moveForward(@NotNull Player player) {
         Space space = player.getSpace();
         if (player != null && player.board == board && space != null) {
