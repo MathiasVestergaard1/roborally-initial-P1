@@ -320,20 +320,35 @@ public class GameController {
         }
     }
 
-    // TODO: V2
+    /**
+     * This method moves the player forward two spaces, by calling the moveForward method twice.
+     *
+     * @param player the player that should be moved.
+     * @author Mads Hauberg
+     */
     public void fastForward(@NotNull Player player) {
         moveForward(player);
         moveForward(player);
     }
 
-    // TODO: V2
+    /**
+     * This method turns the player 90 degrees to the right.
+     *
+     * @param player the player that should be turned.
+     * @author Mads Hauberg
+     */
     public void turnRight(@NotNull Player player) {
         if (player != null && player.board == board) {
             player.setHeading(player.getHeading().next());
         }
     }
 
-    // TODO: V2
+    /**
+     * This method turns the player 90 degrees to the left.
+     *
+     * @param player the player that should be turned
+     * @author Mads Hauberg
+     */
     public void turnLeft(@NotNull Player player) {
         if (player != null && player.board == board) {
             player.setHeading(player.getHeading().prev());
