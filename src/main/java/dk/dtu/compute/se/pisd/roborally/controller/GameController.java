@@ -69,11 +69,11 @@ public class GameController {
 
     // XXX: V2
     /**
-     * This is a method that starts the game programming pahse of a board.
-     * The method then goes through each palyer in the game and performs the following actions.
-     * For each register a palyer can program a command for their robot to execute.
+     * This is a method that starts the game programming phase of a board.
+     * The method then goes through each player in the game and performs the following actions.
+     * For each register a player can program a command for their robot to execute.
      * For each card in a players hand the method sets the CommandCardfields to have a randomly generated command card and be visible.
-     * The actions set up the initial state of the programming phase, were payers are programming their robots to execute a series of commands.
+     * The actions set up the initial state of the programming phase, where players are programming their robots to execute a series of commands.
      * The game ensure that each player starts on an equal footing.   
      */
     public void startProgrammingPhase() {
@@ -100,12 +100,14 @@ public class GameController {
 
     // XXX: V2 
     /**
-     * This is a method that generates a random Commandcard freom the set of available commands.
-     * The method forst creates an array of all possible command values using the "command.values()" method.
+     * This is a method that generates a random CommandCard from the set of available commands.
+     * The method first creates an array of all possible command values using the "command.values()" method.
      * It then generates a random array using the "Math.random()" method.
      * This random integer is used as an index to select a random command from the array.
      * The method creates and returns a new CommandCard object using the randomly, 
-     * selected command as an argument for the commandcard constructor.   
+     * selected command as an argument for the CommandCard constructor.
+     *
+     * @return CommandCard
      */
     private CommandCard generateRandomCommandCard() {
         Command[] commands = Command.values();
@@ -117,8 +119,8 @@ public class GameController {
     /**
      * This is a method that finishes the programming phase of a board game and starts the activation phase.
      * This method prepares the game for the activation phase, where players activate their robots to execute the commands
-     * that they progrmmed in the programming phase. By setting the game phase to activation and setting the current player
-     * and step the appropriate values, the game ensures that players will take turns activating their robots in the corret order.
+     * that they programmed in the programming phase. By setting the game phase to activation and setting the current player
+     * and step the appropriate values, the game ensures that players will take turns activating their robots in the correct order.
      *   
      */
     public void finishProgrammingPhase() {
@@ -131,14 +133,16 @@ public class GameController {
 
     // XXX: V2
     /**
-     * This is a private method that makes the CommandCardFields for a particular register visible for all palyers in the game.
-     * The method takes a "register" as an argument, whichlikely represent the index of the register that should be made visible.
+     * This is a private method that makes the CommandCardFields for a particular register visible for all players in the game.
+     * The method takes a "register" as an argument, which likely represent the index of the register that should be made visible.
      * It first checks if the register is within the valid range, if the register is outside the range,
      * the method does not make any changes to the CommandCardFields.
      * If the register is within the valid range, the method then goes through each player in the game and makes the 
      * CommandCardFields for the specified register visible.
-     * This can indicate that playera are in the programming phase of the game and are currently programming their robots for the 
-     * specified register.      
+     * This can indicate that players are in the programming phase of the game and are currently programming their robots for the
+     * specified register.
+     *
+     * @param register the register to make visible
      */
     private void makeProgramFieldsVisible(int register) {
         if (register >= 0 && register < Player.NO_REGISTERS) {
@@ -153,13 +157,13 @@ public class GameController {
     // XXX: V2
     /**
      * This method makes certain fields invisible in a board game.
-     * THe method first loops through all the player in the game by using the "Board.playernumber" method,
+     * THe method first loops through all the player in the game by using the "Board.getPlayersNumber" method,
      * Which returns the number of players in the board.
-     * It then retieves each player object one by one using the "board.getplayer" method, where "i" is the index of the player being retrived.
+     * It then retrieves each player object one by one using the "board.getPlayer" method, where "i" is the index of the player being retrieved.
      * The code then loops through all the command card fields in the players program field using the "player.no.register" constant.
      * This constant represents the number of command card fields in a players program field.
-     * For each command card field, the code retrieves the "commandcardfield" object from the players program field and sets its visibility
-     * to false using the "setvisible(false)" method. This hides the command card field from view.  
+     * For each command card field, the code retrieves the "CommandCardField" object from the players program field and sets its visibility
+     * to false using the "setVisible(false)" method. This hides the command card field from view.
      */
     private void makeProgramFieldsInvisible() {
         for (int i = 0; i < board.getPlayersNumber(); i++) {
@@ -173,9 +177,9 @@ public class GameController {
 
     // XXX: V2
     /**
-     * The method statrs by calling the "board.setstepmode(false)" method which disables the step mode fom the game. 
+     * The method starts by calling the "board.setStepMode(false)" method which disables the step mode fom the game.
      * Step mode is a feature that allows the game to execute one step at a time.
-     * After disabling the step mode, the method then calls the "continueprogram()" method. This method contains executing the program
+     * After disabling the step mode, the method then calls the "continuePrograms()" method. This method contains executing the program
      * of each player in the game.  
      */
     public void executePrograms() {
@@ -185,8 +189,8 @@ public class GameController {
 
     // XXX: V2
     /**
-     * This method first calls "board.setstepmode(true)" which enables the step mode for the game.
-     * After enabling step mode, the method then calls the "continueprogram()" method. This likely contains the executing 
+     * This method first calls "board.setStepMode(true)" which enables the step mode for the game.
+     * After enabling step mode, the method then calls the "continuePrograms()" method. This likely contains the executing
      * the program of each player in the game.   
      */
     public void executeStep() {
@@ -203,16 +207,16 @@ public class GameController {
 
     // XXX: V2
     /**
-     * First gets the current player from the "board" object and assign it to the "curretnplayer" variable.
-     * if the current phase of the is "phase.activation" and "currentplayer" it is not null, then the method will proceeds to execute the next stepsof the game.
-     * it get the current step from "board" object and assign it to the "step" variable.
+     * First gets the current player from the "board" object and assign it to the "currentPlayer" variable.
+     * if the current phase of the is "phase.activation" and "currentPlayer" it is not null, then the method will proceed to execute the next steps of the game.
+     * it gets the current step from "board" object and assign it to the "step" variable.
      * if step is between 0 and "player_no_register" the method checks whether the command card in the players program field at the current
-     * step is an "option_left_right" command. if it is it calls the "optioncard()" method and returns.
+     * step is an "option_left_right" command. if it is it calls the "optionCard()" method and returns.
      * if there is a command card in the players program field at the current step, the method gets the "command" enum value from the card and calls the 
-     * "executecommand" method to excute it. 
-     * if there are stil more steps to go, the methods calls the "makeprogramfieldsvisible" method to reveal the next steps field, 
+     * "executeCommand" method to execute it.
+     * if there are still more steps to go, the methods calls the "makeProgramFieldsVisible" method to reveal the next steps field,
      * sets the "board" step counter to the next step and sets the current player to the first player.
-     * if there are no more steps to go, the method calls the "startprogrammingphase" method to start the next phase of the game.  
+     * if there are no more steps to go, the method calls the "startProgrammingPhase" method to start the next phase of the game.
      */
     private void executeNextStep() {
         Player currentPlayer = board.getCurrentPlayer();
@@ -340,12 +344,17 @@ public class GameController {
         board.setPhase(Phase.PLAYER_INTERACTION);
     }
     /**
-    * This method calls "movecards" theat takes two parameter "source" and "target", both of type "commandcardfield". 
-    * The Method moves a "Commandcard" object from the source to the "target" field.
-    * it first gets the commandcard object from the source field and assign it to the sourcecard variable.
-    * it thne gets the "commandcard" objet from the "target" field and assign it to the "targetcard" variable.
-    * if the "sourcecard" is not null and "targetcard" is null then the method proceeds to mive the "sourcecard" object to the "target" field.
-    * if either "sourcecard" is null or "targetcard" is not null then the methods returnes false to indicate that the move was unsuccesfull.
+    * This method called "moveCards" takes two parameter "source" and "target", both of type "CommandCardField".
+    * The Method moves a "CommandCard" object from the source to the "target" field.
+    * it first gets the CommandCard object from the source field and assign it to the sourceCard variable.
+    * it then gets the "commandCard" objet from the "target" field and assign it to the "targetCard" variable.
+    * if the "sourceCard" is not null and "targetCard" is null then the method proceeds to give the "sourceCard" object to the "target" field.
+    * if either "sourceCard" is null or "targetCard" is not null then the methods returns false to indicate that the move was unsuccessful.
+     *
+     * @param source the cardField the card came from
+     * @param target the cardField the card is going to
+     *
+     * @return boolean
     */
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
@@ -361,14 +370,17 @@ public class GameController {
     /**
      * The method takes two parameter "player and option".
      * The first line of the method sets the game phase to "phase.activation". This indicates that the game is currently in 
-     * the activation pahse, where the player choose and execute their commands option.
-     * The method then uses a switch statement to execute the chosen command option. if the option "left" the "turnleft()" method is called
+     * the activation phase, where the player choose and execute their commands option.
+     * The method then uses a switch statement to execute the chosen command option. if the option "left" the "turnLeft()" method is called
      * with the "player" parameter, which turn the player token left on the game board.,
-     * The "board.getstep()" method checks if the current player is not the last player in the game, the method sets the current
-     * player to the last player in the game by calling "board.setcurrentpalyer()".
-     * The "makeprogramfieldvisible()" method sets the current step to the new step by calling "board.setscurrent()", and continues the game.
-     * If the new step is greater than than or equal to the total number of program fields, the method starts programming phase by calling
-     * the "startprogramming phase()" method. Which reset the game for the next round.
+     * The "board.getStep()" method checks if the current player is not the last player in the game, the method sets the current
+     * player to the last player in the game by calling "board.setCurrentPlayer()".
+     * The "makeProgramFieldsVisible()" method sets the current step to the new step by calling "board.setCurrentPlayer()", and continues the game.
+     * If the new step is greater than that or equal to the total number of program fields, the method starts programming phase by calling
+     * the "startProgrammingPhase()" method. Which reset the game for the next round.
+     *
+     * @param player the player choosing
+     * @param option the options to choose from
      */
     public void choose(Player player, Command option) {
         board.setPhase(Phase.ACTIVATION);
