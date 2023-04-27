@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
 
 /**
  * ...
@@ -37,11 +38,13 @@ public class Space extends Subject {
     public final int y;
 
     private Player player;
+    private Obstacle obstacle;
 
     public Space(Board board, int x, int y) {
         this.board = board;
         this.x = x;
         this.y = y;
+        obstacle = null;
         player = null;
     }
 
@@ -63,6 +66,10 @@ public class Space extends Subject {
             }
             notifyChange();
         }
+    }
+
+    public void setObstacle(Obstacle obstacle) {
+        this.obstacle = obstacle;
     }
 
     void playerChanged() {
