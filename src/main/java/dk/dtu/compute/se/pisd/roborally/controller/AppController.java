@@ -21,6 +21,9 @@
  */
 package dk.dtu.compute.se.pisd.roborally.controller;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
@@ -95,6 +98,13 @@ public class AppController implements Observer {
 
     public void saveGame() {
         // XXX needs to be implemented eventually
+        List<Player> players = gameController.board.getPlayers();
+
+        Gson gson = new Gson();
+
+        String stringJson = gson.toJson(players);
+
+        System.out.println(stringJson);
     }
 
     public void loadGame() {
