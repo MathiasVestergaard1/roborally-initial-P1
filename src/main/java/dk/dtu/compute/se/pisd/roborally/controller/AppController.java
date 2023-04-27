@@ -103,8 +103,15 @@ public class AppController implements Observer {
         }
     }
 
+
+    /**
+     * Saves the current state of the game to a json file, that can be loaded later.
+     *
+     * @throws IOException
+     *
+     * @author Mads Hauberg
+     */
     public void saveGame() throws IOException {
-        // XXX needs to be implemented eventually
         List<Player> players = gameController.board.getPlayers();
 
         JSONArray jsonPlayers = new JSONArray();
@@ -131,6 +138,14 @@ public class AppController implements Observer {
         System.out.println(jsonPlayers.toJSONString());
     }
 
+    /**
+     * Loads a saved json file and set up a new game with the data from that file.
+     *
+     * @throws IOException
+     * @throws ParseException
+     *
+     * @author Mads Hauberg
+     */
     public void loadGame() throws IOException, ParseException {
         FileReader reader = new FileReader("save.json");
         JSONParser jsonParser = new JSONParser();
@@ -146,8 +161,6 @@ public class AppController implements Observer {
                 }
             }
 
-            // XXX the board should eventually be created programmatically or loaded from a file
-            //     here we just create an empty board with the required number of players.
             Board board = new Board(8,8);
             gameController = new GameController(board);
             int no = jsonArray.size();
@@ -160,8 +173,6 @@ public class AppController implements Observer {
                 player.setHeading(Heading.valueOf((String) jsonPlayer.get("heading")));
             }
 
-            // XXX: V2
-            // board.setCurrentPlayer(board.getPlayer(0));
             gameController.startProgrammingPhase();
 
             roboRally.createBoardView(gameController);
