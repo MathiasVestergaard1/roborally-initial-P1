@@ -13,7 +13,5 @@ public abstract class Obstacle {
 
     public Obstacle(Space space, Color color, Heading heading) {
         this.space = space;
-        this.color = color;
-        this.heading = heading;
     }
 }
