@@ -21,15 +21,13 @@
  */
 package dk.dtu.compute.se.pisd.roborally.controller;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
 
 import dk.dtu.compute.se.pisd.roborally.model.Board;
+import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
 import javafx.application.Platform;
@@ -38,7 +36,16 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import org.jetbrains.annotations.NotNull;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -62,7 +69,7 @@ public class AppController implements Observer {
         this.roboRally = roboRally;
     }
 
-    public void newGame() {
+    public void newGame() throws IOException {
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
         dialog.setTitle("Player number");
         dialog.setHeaderText("Select number of players");
@@ -96,20 +103,70 @@ public class AppController implements Observer {
         }
     }
 
-    public void saveGame() {
+    public void saveGame() throws IOException {
         // XXX needs to be implemented eventually
         List<Player> players = gameController.board.getPlayers();
 
-        Gson gson = new Gson();
+        JSONArray jsonPlayers = new JSONArray();
 
-        String stringJson = gson.toJson(players);
+        for (int i = 0; i < players.size(); i++) {
+            Player player = players.get(i);
 
-        System.out.println(stringJson);
+            JSONObject jsonPlayer = new JSONObject();
+
+            JSONObject jsonSpace = new JSONObject();
+
+            jsonSpace.put("x", Integer.toString(player.getSpace().x));
+            jsonSpace.put("y", Integer.toString(player.getSpace().y));
+
+            jsonPlayer.put("ID", Integer.toString(i));
+            jsonPlayer.put("heading", player.getHeading().toString());
+            jsonPlayer.put("space", jsonSpace);
+
+            jsonPlayers.add(jsonPlayer);
+        }
+
+
+        Files.write(Paths.get("save.json"), jsonPlayers.toJSONString().getBytes());
+        System.out.println(jsonPlayers.toJSONString());
     }
 
-    public void loadGame() {
-        // XXX needs to be implememted eventually
-        // for now, we just create a new game
+    public void loadGame() throws IOException, ParseException {
+        FileReader reader = new FileReader("save.json");
+        JSONParser jsonParser = new JSONParser();
+        JSONArray jsonArray = (JSONArray) jsonParser.parse(reader);
+
+
+        if (!jsonArray.isEmpty()) {
+            if (gameController != null) {
+                // The UI should not allow this, but in case this happens anyway.
+                // give the user the option to save the game or abort this operation!
+                if (!stopGame()) {
+                    return;
+                }
+            }
+
+            // XXX the board should eventually be created programmatically or loaded from a file
+            //     here we just create an empty board with the required number of players.
+            Board board = new Board(8,8);
+            gameController = new GameController(board);
+            int no = jsonArray.size();
+            for (int i = 0; i < no; i++) {
+                JSONObject jsonPlayer = (JSONObject) jsonArray.get(i);
+                JSONObject jsonSpace = (JSONObject) jsonPlayer.get("space");
+                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                board.addPlayer(player);
+                player.setSpace(board.getSpace(Integer.parseInt((String) jsonSpace.get("x")), Integer.parseInt((String) jsonSpace.get("y"))));
+                player.setHeading(Heading.valueOf((String) jsonPlayer.get("heading")));
+            }
+
+            // XXX: V2
+            // board.setCurrentPlayer(board.getPlayer(0));
+            gameController.startProgrammingPhase();
+
+            roboRally.createBoardView(gameController);
+        }
+
         if (gameController == null) {
             newGame();
         }
@@ -124,7 +181,7 @@ public class AppController implements Observer {
      *
      * @return true if the current game was stopped, false otherwise
      */
-    public boolean stopGame() {
+    public boolean stopGame() throws IOException {
         if (gameController != null) {
 
             // here we save the game (without asking the user).
@@ -137,7 +194,7 @@ public class AppController implements Observer {
         return false;
     }
 
-    public void exit() {
+    public void exit() throws IOException {
         if (gameController != null) {
             Alert alert = new Alert(AlertType.CONFIRMATION);
             alert.setTitle("Exit RoboRally?");
