@@ -8,10 +8,18 @@ import java.awt.*;
 public abstract class Obstacle {
 
     private Space space;
-    private Color color;
-    private Heading heading;
+    private String color;
+    private Heading heading = Heading.SOUTH;
 
-    public Obstacle(Space space, Color color, Heading heading) {
+    public Obstacle(Space space, String color, Heading heading) {
         this.space = space;
+    }
+
+    public String getColor() {
+        return this.color;
+    }
+
+    public Heading getHeading() {
+        return this.heading;
     }
 }

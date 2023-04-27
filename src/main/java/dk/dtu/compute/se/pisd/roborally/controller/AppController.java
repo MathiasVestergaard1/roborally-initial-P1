@@ -30,6 +30,9 @@ import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
+import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.Conveyor;
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -41,6 +44,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.awt.*;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -94,6 +98,12 @@ public class AppController implements Observer {
                 board.addPlayer(player);
                 player.setSpace(board.getSpace(i % board.width, i));
             }
+
+            //This is just temporary for testing
+            Space space = board.getSpace(5, 5);
+            Obstacle obstacle = new Conveyor(space, "red", Heading.SOUTH);
+            space.setObstacle(obstacle);
+            board.setObstacle();
 
             // XXX: V2
             // board.setCurrentPlayer(board.getPlayer(0));
