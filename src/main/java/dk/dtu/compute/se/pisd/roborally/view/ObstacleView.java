@@ -39,30 +39,45 @@ public class ObstacleView extends SpaceView implements ViewObserver {
         //This is temporary, it should not be an arrow
         Obstacle obstacle = space.getObstacle();
         if (obstacle instanceof Conveyor) {
-            Polygon arrow = new Polygon(0.0, 0.0,
+            Polygon conveyor = new Polygon(0.0, 0.0,
                     20.0, 0.0,
                     20.0, 40.0,
                     0.0, 40.0);
             try {
-                arrow.setFill(Color.valueOf(obstacle.getColor()));
+                conveyor.setFill(Color.valueOf(obstacle.getColor()));
             } catch (Exception e) {
-                arrow.setFill(Color.MEDIUMPURPLE);
+                conveyor.setFill(Color.MEDIUMPURPLE);
             }
 
-            arrow.setRotate((90*obstacle.getHeading().ordinal())%360);
-            this.getChildren().add(arrow);
+            conveyor.setRotate((90*obstacle.getHeading().ordinal())%360);
+            this.getChildren().add(conveyor);
         } else if (obstacle instanceof Wall) {
-            Polygon arrow = new Polygon(-30.0, 0.0,
+            Polygon wall = new Polygon(-30.0, 0.0,
                     30.0, 0.0,
                     30.0, 10.0,
                     -30.0, 10.0);
             try {
-                arrow.setFill(Color.valueOf(obstacle.getColor()));
+                wall.setFill(Color.valueOf(obstacle.getColor()));
             } catch (Exception e) {
-                arrow.setFill(Color.MEDIUMPURPLE);
+                wall.setFill(Color.MEDIUMPURPLE);
             }
-            arrow.setRotate((90*obstacle.getHeading().ordinal())%360);
-            this.getChildren().add(arrow);
+            switch (obstacle.getHeading()) {
+                case NORTH -> {
+                    wall.setTranslateY(-30);
+                }
+                case SOUTH -> {
+                    wall.setTranslateY(30);
+                }
+                case EAST -> {
+                    wall.setTranslateX(30);
+                }
+                case WEST -> {
+                    wall.setTranslateX(-30);
+                }
+            }
+            wall.setRotate((90*obstacle.getHeading().ordinal())%360);
+
+            this.getChildren().add(wall);
         }
 
     }

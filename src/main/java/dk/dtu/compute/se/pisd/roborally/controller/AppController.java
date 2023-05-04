@@ -108,7 +108,7 @@ public class AppController implements Observer {
 
             //Wall
             Space space1 = board.getSpace(3,3);
-            Obstacle obstacle1 = new Wall(space1,"red",Heading.SOUTH);
+            Obstacle obstacle1 = new Wall(space1,"red",Heading.EAST);
             space1.setObstacle(obstacle1);
             board.setObstacle();
             // XXX: V2
