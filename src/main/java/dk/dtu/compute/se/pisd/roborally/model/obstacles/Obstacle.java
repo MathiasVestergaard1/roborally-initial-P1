@@ -9,10 +9,12 @@ public abstract class Obstacle {
 
     private Space space;
     private String color;
-    private Heading heading = Heading.SOUTH;
+    private Heading heading;
 
     public Obstacle(Space space, String color, Heading heading) {
         this.space = space;
+        this.color = color;
+        this.heading = heading;
     }
 
     public String getColor() {

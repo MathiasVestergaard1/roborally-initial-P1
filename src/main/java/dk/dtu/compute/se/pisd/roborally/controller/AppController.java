@@ -102,7 +102,7 @@ public class AppController implements Observer {
 
             //This is just temporary for testing
             Space space = board.getSpace(5, 5);
-            Obstacle obstacle = new Conveyor(space, "red", Heading.SOUTH);
+            Obstacle obstacle = new Conveyor(space, "grey", Heading.EAST);
             space.setObstacle(obstacle);
             board.setObstacle();
 

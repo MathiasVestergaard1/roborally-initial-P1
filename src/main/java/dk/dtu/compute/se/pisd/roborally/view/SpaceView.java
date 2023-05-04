@@ -98,8 +98,9 @@ public class SpaceView extends StackPane implements ViewObserver {
         Obstacle obstacle = space.getObstacle();
         if (obstacle != null) {
             Polygon arrow = new Polygon(0.0, 0.0,
-                    10.0, 20.0,
-                    20.0, 0.0 );
+                    20.0, 0.0,
+                    20.0, 40.0,
+                    0.0, 40.0);
             try {
                 arrow.setFill(Color.valueOf(obstacle.getColor()));
             } catch (Exception e) {
