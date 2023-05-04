@@ -334,6 +334,13 @@ public class GameController {
         }
     }
 
+    /**
+     * This method is used to move the player 1 in the direction of the conveyor belt.
+     * It is called when a player lands on a conveyor belt.
+     *
+     * @param player The player that should be moved.
+     * @author Mads Halberg
+     */
     public void movePlayerOnConveyor(Player player) {
         Space space = player.getSpace();
         if (player != null && player.board == board && space != null) {
