@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.Conveyor;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Wall;
 import org.jetbrains.annotations.NotNull;
@@ -337,7 +338,7 @@ public class GameController {
         Space space = player.getSpace();
         if (player != null && player.board == board && space != null) {
 
-            if(space.getObstacle() == null) {
+            if(space.getObstacle() == null || !(space.getObstacle() instanceof Conveyor)) {
                 return;
             }
 
@@ -365,23 +366,23 @@ public class GameController {
             }
         }
     }
-    public boolean wallCheck(Player player){
+    public boolean wallCheck(@NotNull Player player){
         Space space = player.getSpace();
         Obstacle wall = space.getObstacle();
-        if(wall == null || !(wall instanceof Wall)){
-            return false;
-        }
-        Heading wallHeading = wall.getHeading();
         Heading playerHeading = player.getHeading();
-        if(wallHeading == playerHeading){
-            return true;
+        if(wall != null && wall instanceof Wall){
+            Heading wallHeading = wall.getHeading();
+            if(wallHeading == playerHeading){
+                return true;
+            }
         }
+
         Space nextSpace = board.getNeighbour(space, playerHeading);
-        Obstacle nextWall = space.getObstacle();
+        Obstacle nextWall = nextSpace.getObstacle();
         if(nextWall == null || !(nextWall instanceof Wall)){
             return false;
         }
-        Heading nextWallHeading = wall.getHeading().next().next();
+        Heading nextWallHeading = nextWall.getHeading().next().next();
         if(nextWallHeading == playerHeading){
             return true;
         }
