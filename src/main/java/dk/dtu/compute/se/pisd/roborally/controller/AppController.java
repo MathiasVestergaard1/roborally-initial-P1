@@ -106,7 +106,7 @@ public class AppController implements Observer {
             space.setObstacle(obstacle);
             board.setObstacle();
 
-            //Wall
+            //We made a temporary wall on the board to make sure the method wallCheck works.
             Space space1 = board.getSpace(3,3);
             Obstacle obstacle1 = new Wall(space1,"red",Heading.EAST);
             space1.setObstacle(obstacle1);

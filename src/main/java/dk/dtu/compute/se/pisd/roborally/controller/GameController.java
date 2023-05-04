@@ -373,6 +373,12 @@ public class GameController {
             }
         }
     }
+    /**
+     * @param player checks if there is a wall in front of the player.
+     *               If there is a wall it checks which way the header is facing, if it's the same way as the player,
+     *               the player can't continue. And if the wall is on the opposite side it also can't move through.
+     * @author Mathias
+     */
     public boolean wallCheck(@NotNull Player player){
         Space space = player.getSpace();
         Obstacle wall = space.getObstacle();
