@@ -132,6 +132,10 @@ public class Board extends Subject {
         }
     }
 
+    public void setObstacle() {
+        notifyChange();
+    }
+
     public Phase getPhase() {
         return phase;
     }

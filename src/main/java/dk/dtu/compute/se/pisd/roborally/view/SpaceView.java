@@ -25,6 +25,7 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
@@ -64,9 +65,6 @@ public class SpaceView extends StackPane implements ViewObserver {
         } else {
             this.setStyle("-fx-background-color: black;");
         }
-        if ((space.x == 5 && space.y == 5)){
-            this.setStyle("-fx-background-color: red");
-        }
 
         // updatePlayer();
 
@@ -94,10 +92,28 @@ public class SpaceView extends StackPane implements ViewObserver {
         }
     }
 
+    private void updateObstacles() {
+        //This is temporary, it should not be an arrow
+        Obstacle obstacle = space.getObstacle();
+        if (obstacle != null) {
+            Polygon arrow = new Polygon(0.0, 0.0,
+                    10.0, 20.0,
+                    20.0, 0.0 );
+            try {
+                arrow.setFill(Color.valueOf(obstacle.getColor()));
+            } catch (Exception e) {
+                arrow.setFill(Color.MEDIUMPURPLE);
+            }
+
+            arrow.setRotate((90*obstacle.getHeading().ordinal())%360);
+            this.getChildren().add(arrow);
+        }
+    }
     @Override
     public void updateView(Subject subject) {
         if (subject == this.space) {
             updatePlayer();
+            updateObstacles();
         }
     }
 
