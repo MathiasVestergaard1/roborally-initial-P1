@@ -33,6 +33,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Conveyor;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.Wall;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -105,6 +106,11 @@ public class AppController implements Observer {
             space.setObstacle(obstacle);
             board.setObstacle();
 
+            //Wall
+            Space space1 = board.getSpace(3,3);
+            Obstacle obstacle1 = new Wall(space1,"red",Heading.SOUTH);
+            space1.setObstacle(obstacle1);
+            board.setObstacle();
             // XXX: V2
             // board.setCurrentPlayer(board.getPlayer(0));
             gameController.startProgrammingPhase();
