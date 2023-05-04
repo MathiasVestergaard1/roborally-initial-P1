@@ -313,6 +313,7 @@ public class GameController {
                      neighbortarget.setPlayer(someplayer);
                  }
                }
+            movePlayerOnConveyor(player);
 
                 // XXX note that this removes an other player from the space, when there
                 //     is another player on the target. Eventually, this needs to be
@@ -323,6 +324,39 @@ public class GameController {
                 * dvs. Man skal kalde board.getNeighbour med target(det space der er "optaget") og heading (som spilleren havede)
                 * Til sidst skal der kaldes target2.setPlayer(player2) og target.setPlayer(player);
                 * */
+        }
+    }
+
+    public void movePlayerOnConveyor(Player player) {
+        Space space = player.getSpace();
+        if (player != null && player.board == board && space != null) {
+
+            if(space.getObstacle() == null) {
+                return;
+            }
+
+            Heading heading = space.getObstacle().getHeading();
+
+            ArrayList<Space> spacelist = new ArrayList<Space>();
+            spacelist.add(space);
+
+            while (true) {
+                Space nexttarget = board.getNeighbour(space, heading);
+                if (nexttarget != null && space.getPlayer() != null) {
+                    spacelist.add(nexttarget);
+                    space = nexttarget;
+                } else {
+                    break;
+                }
+            }
+            for (int i = spacelist.size() - 1; i >= 0; i--) {
+                Space somespace = spacelist.get(i);
+                Player someplayer = somespace.getPlayer();
+                Space neighbortarget = board.getNeighbour(somespace, heading);
+                if (neighbortarget != null) {
+                    neighbortarget.setPlayer(someplayer);
+                }
+            }
         }
     }
 
