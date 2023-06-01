@@ -4,9 +4,10 @@ Then find StartRoboRally.java under main/dk.dtu.compute.se.pisd/roborally/StartR
 Then run that file to start the game
 
 Things we have added:
-We have added the ability to have robots collide with each other, no matter how many it is.
-I.E 3 players in a line will all be pushed by a player one of them is pushed.
-We have added the ability to use the Left or right card correctly, so that a player is able to choose between the two actions.
+We have added walls which the player cannot move through, they work from both directions.
+We have also added conveyor belts, that move the player in the direction of the conveyor belt.
+These are not yet fully implimentet, but the functionallity is there and we have added two test obstacles, that are hardcoded for now.
+We also added save/load funcitonality, that saves the locations of all the players.
 
 How to play the game:
 You put cards into the card fields for the players you want and then press finish programming
