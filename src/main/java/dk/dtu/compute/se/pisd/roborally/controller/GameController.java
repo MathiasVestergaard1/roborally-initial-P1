@@ -282,6 +282,10 @@ public class GameController {
                 case UTURN:
                     this.turnLeft(player);
                     this.turnLeft(player);
+                case FASTEST_FORWARD:
+                    this.fastForward(player);
+                    this.moveForward(player);
+                    break;
                 default:
                     // DO NOTHING (for now)
             }
