@@ -3,6 +3,7 @@ package dk.dtu.compute.se.pisd.roborally.view;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Conveyor;
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.Gear;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Wall;
 import javafx.scene.paint.Color;
@@ -78,8 +79,19 @@ public class ObstacleView extends SpaceView implements ViewObserver {
             wall.setRotate((90*obstacle.getHeading().ordinal())%360);
 
             this.getChildren().add(wall);
-        }
+        } else if (obstacle instanceof Gear) {
+            Polygon gear = new Polygon(-30.0, 0.0,
+                    30.0, 0.0,
+                    30.0, 10.0,
+                    -30.0, 10.0);
+            try {
+                gear.setFill(Color.valueOf(obstacle.getColor()));
+            } catch (Exception e) {
+                gear.setFill(Color.MEDIUMPURPLE);
+            }
+            this.getChildren().add(gear);
 
+        }
     }
 
     @Override

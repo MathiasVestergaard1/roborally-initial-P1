@@ -32,6 +32,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Player;
 
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Conveyor;
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.Gear;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Wall;
 import javafx.application.Platform;
@@ -100,6 +101,7 @@ public class AppController implements Observer {
                 player.setSpace(board.getSpace(i % board.width, i));
             }
 
+
             //This is just temporary for testing
             Space space = board.getSpace(5, 5);
             Obstacle obstacle = new Conveyor(space, "grey", Heading.EAST);
@@ -111,6 +113,13 @@ public class AppController implements Observer {
             Obstacle obstacle1 = new Wall(space1,"red",Heading.EAST);
             space1.setObstacle(obstacle1);
             board.setObstacle();
+
+
+            Space space2 =board.getSpace(4, 4);
+            Obstacle obstacle2 = new Gear(space2, "blue", Heading.EAST);
+            space2.setObstacle(obstacle2);
+            board.setObstacle();
+
             // XXX: V2
             // board.setCurrentPlayer(board.getPlayer(0));
             gameController.startProgrammingPhase();

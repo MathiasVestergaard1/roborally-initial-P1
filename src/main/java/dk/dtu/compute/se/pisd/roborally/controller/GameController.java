@@ -25,6 +25,7 @@ import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Conveyor;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Wall;
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.Gear;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
@@ -321,7 +322,7 @@ public class GameController {
                  }
                }
             movePlayerOnConveyor(player);
-
+            MovePlayerOnGear(player);
                 // XXX note that this removes an other player from the space, when there
                 //     is another player on the target. Eventually, this needs to be
                 //     implemented in a way so that other players are pushed away
@@ -373,6 +374,20 @@ public class GameController {
             }
         }
     }
+
+    public void MovePlayerOnGear(Player player) {
+        Space space = player.getSpace();
+        if (player != null && player.board == board && space != null) {
+            if(space.getObstacle() == null || !(space.getObstacle() instanceof Gear)) {
+                return;
+            }
+            Heading heading = player.getHeading();
+            heading = heading.next();
+            player.setHeading(heading);
+        }
+    }
+
+
     /**
      * @param player checks if there is a wall in front of the player.
      *               If there is a wall it checks which way the header is facing, if it's the same way as the player,
