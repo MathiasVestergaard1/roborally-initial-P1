@@ -279,6 +279,9 @@ public class GameController {
                 case FAST_FORWARD:
                     this.fastForward(player);
                     break;
+                case UTURN:
+                    this.turnLeft(player);
+                    this.turnLeft(player);
                 default:
                     // DO NOTHING (for now)
             }
@@ -447,6 +450,13 @@ public class GameController {
      */
     public void turnLeft(@NotNull Player player) {
         if (player != null && player.board == board) {
+            player.setHeading(player.getHeading().prev());
+        }
+    }
+
+    public void uTurn(@NotNull Player player) {
+        if (player != null && player.board == board) {
+            player.setHeading(player.getHeading().prev());
             player.setHeading(player.getHeading().prev());
         }
     }
