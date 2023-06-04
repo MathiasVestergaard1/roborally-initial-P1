@@ -30,6 +30,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 
@@ -76,7 +77,7 @@ public class RoboRally extends Application {
                     e.consume();
                     try {
                         appController.exit();
-                    } catch (IOException ex) {
+                    } catch (IOException | ParseException ex) {
                         throw new RuntimeException(ex);
                     }
                 } );
