@@ -40,6 +40,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.TextInputDialog;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -51,10 +52,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * ...
@@ -66,33 +65,63 @@ public class AppController implements Observer {
 
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
-
     final private RoboRally roboRally;
-
+    private String loadedFile = null;
     private GameController gameController;
 
     public AppController(@NotNull RoboRally roboRally) {
         this.roboRally = roboRally;
     }
 
-    public void newGame() throws IOException {
+    public void newGame() throws IOException, ParseException {
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
         dialog.setTitle("Player number");
         dialog.setHeaderText("Select number of players");
         Optional<Integer> result = dialog.showAndWait();
 
-        if (result.isPresent()) {
-            if (gameController != null) {
-                // The UI should not allow this, but in case this happens anyway.
-                // give the user the option to save the game or abort this operation!
-                if (!stopGame()) {
-                    return;
-                }
+        if (result.isEmpty()) {
+            gameController = null;
+            return;
+        }
+        if (gameController != null) {
+            // The UI should not allow this, but in case this happens anyway.
+            // give the user the option to save the game or abort this operation!
+            if (!stopGame()) {
+                return;
             }
+        }
 
-            // XXX the board should eventually be created programmatically or loaded from a file
-            //     here we just create an empty board with the required number of players.
-            Board board = new Board(8,8);
+        int boardCount = 0;
+        boolean defaultGame = false;
+
+        JSONObject jsonFile;
+        JSONObject boards = new JSONObject();
+
+        try {
+            FileReader reader = new FileReader("save.json");
+            JSONParser jsonParser = new JSONParser();
+            jsonFile = (JSONObject) jsonParser.parse(reader);
+
+            boards = (JSONObject) jsonFile.get("boards");
+            boardCount = boards.size();
+        } catch (IOException | NullPointerException ignored) {
+            defaultGame = true;
+        }
+
+        if (boardCount == 0) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("No boards found");
+            alert.setHeaderText("No boards found");
+            String s ="You don't have any boards in your save.json file, you will play on the default board";
+            alert.setContentText(s);
+            alert.show();
+            defaultGame = true;
+        }
+
+        loadedFile = null;
+
+        if (defaultGame) {
+            Board board = new Board(8, 8);
             gameController = new GameController(board);
             int no = result.get();
             for (int i = 0; i < no; i++) {
@@ -100,32 +129,68 @@ public class AppController implements Observer {
                 board.addPlayer(player);
                 player.setSpace(board.getSpace(i % board.width, i));
             }
+        } else {
+            ArrayList<String> BOARDS_LIST = new ArrayList<String>();
 
+            for (Object o : boards.keySet()) {
+                String key = o.toString();
+                BOARDS_LIST.add(key);
+            }
 
-            //This is just temporary for testing
-            Space space = board.getSpace(5, 5);
-            Obstacle obstacle = new Conveyor(space, "grey", Heading.EAST);
-            space.setObstacle(obstacle);
-            board.setObstacle();
+            ChoiceDialog<String> dialogList = new ChoiceDialog<>(BOARDS_LIST.get(0), BOARDS_LIST);
+            dialogList.setTitle("Saves");
+            dialogList.setHeaderText("Select save to load");
+            Optional<String> resultList = dialogList.showAndWait();
 
-            //We made a temporary wall on the board to make sure the method wallCheck works.
-            Space space1 = board.getSpace(3,3);
-            Obstacle obstacle1 = new Wall(space1,"red",Heading.EAST);
-            space1.setObstacle(obstacle1);
-            board.setObstacle();
+            if (resultList.isEmpty()) {
+                gameController = null;
+                return;
+            }
+            JSONObject boardConfig = (JSONObject) boards.get(resultList.get());
+            JSONObject jsonBoard = (JSONObject) boardConfig.get("board");
 
+            Board board = new Board(Integer.parseInt((String) jsonBoard.get("width")), Integer.parseInt((String) jsonBoard.get("height")));
+            gameController = new GameController(board);
 
-            Space space2 =board.getSpace(4, 4);
-            Obstacle obstacle2 = new Gear(space2, "blue", Heading.EAST);
-            space2.setObstacle(obstacle2);
-            board.setObstacle();
+            JSONArray jsonObstacles = (JSONArray) boardConfig.get("obstacles");
 
-            // XXX: V2
-            // board.setCurrentPlayer(board.getPlayer(0));
-            gameController.startProgrammingPhase();
+            int no = result.get();
+            for (int i = 0; i < no; i++) {
+                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                board.addPlayer(player);
+                player.setSpace(board.getSpace(i % board.width, i));
+            }
 
-            roboRally.createBoardView(gameController);
+            for (Object o : jsonObstacles) {
+                JSONObject jsonObstacle = (JSONObject) o;
+                JSONObject jsonSpace = (JSONObject) jsonObstacle.get("position");
+                String type = (String) jsonObstacle.get("type");
+                Heading heading = Heading.valueOf((String) jsonObstacle.get("heading"));
+
+                Space space = board.getSpace(Integer.parseInt((String) jsonSpace.get("x")), Integer.parseInt((String) jsonSpace.get("y")));
+                Obstacle obstacle = null;
+
+                switch (type) {
+                    case ("Conveyor") -> {
+                        obstacle = new Conveyor(space, "grey", heading);
+                    }
+                    case ("Gear") -> {
+                        obstacle = new Gear(space, "red", heading);
+                    }
+                    case ("Wall") -> {
+                        obstacle = new Wall(space, "Blue", heading);
+                    }
+                }
+                space.setObstacle(obstacle);
+                board.setObstacle();
+            }
         }
+
+    // XXX: V2
+    // board.setCurrentPlayer(board.getPlayer(0));
+    gameController.startProgrammingPhase();
+
+    roboRally.createBoardView(gameController);
     }
 
 
@@ -136,10 +201,58 @@ public class AppController implements Observer {
      *
      * @author Mads Hauberg
      */
-    public void saveGame() throws IOException {
+    public void saveGame() throws IOException, ParseException {
+        int saveCount = 0;
+
+        JSONObject jsonFile = new JSONObject();
+        JSONObject saves;
+
+        try {
+            FileReader reader = new FileReader("save.json");
+            JSONParser jsonParser = new JSONParser();
+            jsonFile = (JSONObject) jsonParser.parse(reader);
+
+            saves = (JSONObject) jsonFile.get("saves");
+            saveCount = saves.size();
+        } catch (IOException | NullPointerException ignored) {
+            saves = new JSONObject();
+        }
+
+        String saveName = (loadedFile != null) ? loadedFile :  "save" + (saveCount + 1);
+
+        TextInputDialog textDialog = new TextInputDialog(saveName);
+        textDialog.setTitle("Save");
+        textDialog.setHeaderText("Enter save name");
+
+        Optional<String> result = textDialog.showAndWait();
+
+        if (result.isPresent()) {
+            saveName = result.get();
+        } else {
+            return;
+        }
+
+        if (saves.get(saveName) != null) {
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("Save");
+            String s = "A save with that name already exists, do you want do overwrite that save?";
+            alert.setContentText(s);
+
+            Optional<ButtonType> alertResult = alert.showAndWait();
+
+            if ((result.isPresent()) && (alertResult.get() == ButtonType.CANCEL)) {
+                saveGame();
+                return;
+            }
+        }
+
+        Board board = gameController.board;
+
         List<Player> players = gameController.board.getPlayers();
+        ArrayList<Space> spaces = board.getSpacesWithObstacles();
 
         JSONArray jsonPlayers = new JSONArray();
+        JSONArray jsonObstacles = new JSONArray();
 
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
@@ -153,14 +266,49 @@ public class AppController implements Observer {
 
             jsonPlayer.put("ID", Integer.toString(i));
             jsonPlayer.put("heading", player.getHeading().toString());
-            jsonPlayer.put("space", jsonSpace);
+            jsonPlayer.put("position", jsonSpace);
 
             jsonPlayers.add(jsonPlayer);
         }
 
+        for (Space space : spaces) {
+            JSONObject jsonObstacle = new JSONObject();
 
-        Files.write(Paths.get("save.json"), jsonPlayers.toJSONString().getBytes());
-        System.out.println(jsonPlayers.toJSONString());
+            JSONObject jsonSpace = new JSONObject();
+
+            jsonSpace.put("x", Integer.toString(space.x));
+            jsonSpace.put("y", Integer.toString(space.y));
+
+            jsonObstacle.put("heading", space.getObstacle().getHeading().toString());
+            jsonObstacle.put("position", jsonSpace);
+
+            if (space.getObstacle() instanceof Conveyor) {
+                jsonObstacle.put("type", "Conveyor");
+            } else if (space.getObstacle() instanceof Gear) {
+                jsonObstacle.put("type", "Gear");
+            } else if (space.getObstacle() instanceof Wall) {
+                jsonObstacle.put("type", "Wall");
+            }
+
+            jsonObstacles.add(jsonObstacle);
+        }
+
+        JSONObject jsonBoard = new JSONObject();
+
+        jsonBoard.put("width", Integer.toString(gameController.board.width));
+        jsonBoard.put("height", Integer.toString(gameController.board.height));
+
+        JSONObject save = new JSONObject();
+        save.put("board", jsonBoard);
+        save.put("players", jsonPlayers);
+        save.put("obstacles", jsonObstacles);
+
+        saves.put(saveName, save);
+
+        jsonFile.put("saves", saves);
+
+        Files.write(Paths.get("save.json"), jsonFile.toJSONString().getBytes());
+        System.out.println(jsonFile.toJSONString());
     }
 
     /**
@@ -172,40 +320,107 @@ public class AppController implements Observer {
      * @author Mads Hauberg
      */
     public void loadGame() throws IOException, ParseException {
-        FileReader reader = new FileReader("save.json");
-        JSONParser jsonParser = new JSONParser();
-        JSONArray jsonArray = (JSONArray) jsonParser.parse(reader);
+        int saveCount;
 
+        JSONObject jsonFile;
+        JSONObject saves;
 
-        if (!jsonArray.isEmpty()) {
-            if (gameController != null) {
-                // The UI should not allow this, but in case this happens anyway.
-                // give the user the option to save the game or abort this operation!
-                if (!stopGame()) {
-                    return;
+        try {
+            FileReader reader = new FileReader("save.json");
+            JSONParser jsonParser = new JSONParser();
+            jsonFile = (JSONObject) jsonParser.parse(reader);
+
+            saves = (JSONObject) jsonFile.get("saves");
+            saveCount = saves.size();
+        } catch (IOException | NullPointerException ignored) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("No saves found");
+            alert.setHeaderText("No saves found");
+            String s ="You don't have any saved games in your save.json file";
+            alert.setContentText(s);
+            alert.show();
+            return;
+        }
+
+        if (saveCount == 0) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("No saves found");
+            alert.setHeaderText("No saves found");
+            String s ="You don't have any saved games in your save.json file";
+            alert.setContentText(s);
+            alert.show();
+            return;
+        }
+
+        ArrayList<String> SAVES_LIST = new ArrayList<String>();
+
+        for (Object o : saves.keySet()) {
+            String key = o.toString();
+            SAVES_LIST.add(key);
+        }
+
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(SAVES_LIST.get(0), SAVES_LIST);
+        dialog.setTitle("Saves");
+        dialog.setHeaderText("Select save to load");
+        Optional<String> result = dialog.showAndWait();
+
+        if (result.isEmpty()) {
+            gameController = null;
+            return;
+        }
+        if (gameController != null) {
+            // The UI should not allow this, but in case this happens anyway.
+            // give the user the option to save the game or abort this operation!
+            if (!stopGame()) {
+                return;
+            }
+        }
+        JSONObject save = (JSONObject) saves.get(result.get());
+        loadedFile = result.get();
+        JSONObject jsonBoard = (JSONObject) save.get("board");
+
+        Board board = new Board(Integer.parseInt((String) jsonBoard.get("width")), Integer.parseInt((String) jsonBoard.get("height")));
+        gameController = new GameController(board);
+
+        JSONArray jsonPlayers = (JSONArray) save.get("players");
+        JSONArray jsonObstacles = (JSONArray) save.get("obstacles");
+
+        for (int i = 0; i < jsonPlayers.size(); i++) {
+            JSONObject jsonPlayer = (JSONObject) jsonPlayers.get(i);
+            JSONObject jsonSpace = (JSONObject) jsonPlayer.get("position");
+            Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
+            board.addPlayer(player);
+            player.setSpace(board.getSpace(Integer.parseInt((String) jsonSpace.get("x")), Integer.parseInt((String) jsonSpace.get("y"))));
+            player.setHeading(Heading.valueOf((String) jsonPlayer.get("heading")));
+        }
+
+        for (Object o : jsonObstacles) {
+            JSONObject jsonObstacle = (JSONObject) o;
+            JSONObject jsonSpace = (JSONObject) jsonObstacle.get("position");
+            String type = (String) jsonObstacle.get("type");
+            Heading heading = Heading.valueOf((String) jsonObstacle.get("heading"));
+
+            Space space = board.getSpace(Integer.parseInt((String) jsonSpace.get("x")), Integer.parseInt((String) jsonSpace.get("y")));
+            Obstacle obstacle = null;
+
+            switch (type) {
+                case ("Conveyor") -> {
+                    obstacle = new Conveyor(space, "grey", heading);
+                }
+                case ("Gear") -> {
+                    obstacle = new Gear(space, "red", heading);
+                }
+                case ("Wall") -> {
+                    obstacle = new Wall(space, "Blue", heading);
                 }
             }
-
-            Board board = new Board(8,8);
-            gameController = new GameController(board);
-            int no = jsonArray.size();
-            for (int i = 0; i < no; i++) {
-                JSONObject jsonPlayer = (JSONObject) jsonArray.get(i);
-                JSONObject jsonSpace = (JSONObject) jsonPlayer.get("space");
-                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
-                board.addPlayer(player);
-                player.setSpace(board.getSpace(Integer.parseInt((String) jsonSpace.get("x")), Integer.parseInt((String) jsonSpace.get("y"))));
-                player.setHeading(Heading.valueOf((String) jsonPlayer.get("heading")));
-            }
-
-            gameController.startProgrammingPhase();
-
-            roboRally.createBoardView(gameController);
+            space.setObstacle(obstacle);
+            board.setObstacle();
         }
 
-        if (gameController == null) {
-            newGame();
-        }
+        gameController.startProgrammingPhase();
+
+        roboRally.createBoardView(gameController);
     }
 
     /**
@@ -217,7 +432,7 @@ public class AppController implements Observer {
      *
      * @return true if the current game was stopped, false otherwise
      */
-    public boolean stopGame() throws IOException {
+    public boolean stopGame() throws IOException, ParseException {
         if (gameController != null) {
 
             // here we save the game (without asking the user).
@@ -230,7 +445,7 @@ public class AppController implements Observer {
         return false;
     }
 
-    public void exit() throws IOException {
+    public void exit() throws IOException, ParseException {
         if (gameController != null) {
             Alert alert = new Alert(AlertType.CONFIRMATION);
             alert.setTitle("Exit RoboRally?");
