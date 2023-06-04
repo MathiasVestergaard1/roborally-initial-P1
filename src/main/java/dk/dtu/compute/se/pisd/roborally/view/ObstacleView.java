@@ -6,6 +6,8 @@ import dk.dtu.compute.se.pisd.roborally.model.obstacles.Conveyor;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Gear;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Wall;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import org.jetbrains.annotations.NotNull;
