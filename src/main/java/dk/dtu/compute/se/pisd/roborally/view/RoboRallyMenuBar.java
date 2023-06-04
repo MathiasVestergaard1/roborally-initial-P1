@@ -61,7 +61,7 @@ public class RoboRallyMenuBar extends MenuBar {
         newGame.setOnAction( e -> {
             try {
                 this.appController.newGame();
-            } catch (IOException ex) {
+            } catch (IOException | ParseException ex) {
                 throw new RuntimeException(ex);
             }
         });
@@ -71,7 +71,7 @@ public class RoboRallyMenuBar extends MenuBar {
         stopGame.setOnAction( e -> {
             try {
                 this.appController.stopGame();
-            } catch (IOException ex) {
+            } catch (IOException | ParseException ex) {
                 throw new RuntimeException(ex);
             }
         });
@@ -81,7 +81,7 @@ public class RoboRallyMenuBar extends MenuBar {
         saveGame.setOnAction( e -> {
             try {
                 this.appController.saveGame();
-            } catch (IOException ex) {
+            } catch (IOException | ParseException ex) {
                 throw new RuntimeException(ex);
             }
         });
@@ -91,9 +91,7 @@ public class RoboRallyMenuBar extends MenuBar {
         loadGame.setOnAction( e -> {
             try {
                 this.appController.loadGame();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            } catch (ParseException ex) {
+            } catch (IOException | ParseException ex) {
                 throw new RuntimeException(ex);
             }
         });
@@ -103,7 +101,7 @@ public class RoboRallyMenuBar extends MenuBar {
         exitApp.setOnAction( e -> {
             try {
                 this.appController.exit();
-            } catch (IOException ex) {
+            } catch (IOException | ParseException ex) {
                 throw new RuntimeException(ex);
             }
         });
