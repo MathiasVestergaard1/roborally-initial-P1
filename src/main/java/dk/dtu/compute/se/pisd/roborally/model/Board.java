@@ -103,6 +103,18 @@ public class Board extends Subject {
             return null;
         }
     }
+    public ArrayList<Space> getSpacesWithObstacles() {
+        ArrayList<Space> obstacleSpaces = new ArrayList<>();
+
+        for (int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                if (spaces[x][y].getObstacle() != null) {
+                    obstacleSpaces.add(spaces[x][y]);
+                }
+            }
+        }
+        return obstacleSpaces;
+    }
 
     public int getPlayersNumber() {
         return players.size();
