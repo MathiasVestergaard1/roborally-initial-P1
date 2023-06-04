@@ -246,6 +246,8 @@ public class AppController implements Observer {
             }
         }
 
+        loadedFile = saveName;
+
         Board board = gameController.board;
 
         List<Player> players = gameController.board.getPlayers();
