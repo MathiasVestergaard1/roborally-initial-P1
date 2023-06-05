@@ -26,11 +26,8 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
 
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 
-import dk.dtu.compute.se.pisd.roborally.model.Space;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Conveyor;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Gear;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
@@ -260,8 +257,10 @@ public class AppController implements Observer {
             Player player = players.get(i);
 
             JSONObject jsonPlayer = new JSONObject();
-
             JSONObject jsonSpace = new JSONObject();
+
+            ArrayList<String> playerCardsArray = new ArrayList<>();
+            ArrayList<String> programCardsArray = new ArrayList<>();
 
             jsonSpace.put("x", Integer.toString(player.getSpace().x));
             jsonSpace.put("y", Integer.toString(player.getSpace().y));
@@ -269,6 +268,31 @@ public class AppController implements Observer {
             jsonPlayer.put("ID", Integer.toString(i));
             jsonPlayer.put("heading", player.getHeading().toString());
             jsonPlayer.put("position", jsonSpace);
+
+            CommandCardField[] playerCards = player.getCardFields();
+            CommandCardField[] programCards = player.getProgramFields();
+
+            for (CommandCardField commandCardField : playerCards) {
+                CommandCard commandCard = commandCardField.getCard();
+                String cardName = null;
+                if (commandCard != null) {
+                    cardName = commandCard.command.toString();
+                }
+                playerCardsArray.add(cardName);
+            }
+
+            for (CommandCardField commandCardField : programCards) {
+                CommandCard commandCard = commandCardField.getCard();
+                String cardName = null;
+                if (commandCard != null) {
+                    cardName = commandCard.command.toString();
+                }
+                programCardsArray.add(cardName);
+
+            }
+
+            jsonPlayer.put("playerHand", playerCardsArray);
+            jsonPlayer.put("programHand", programCardsArray);
 
             jsonPlayers.add(jsonPlayer);
         }
@@ -299,6 +323,9 @@ public class AppController implements Observer {
 
         jsonBoard.put("width", Integer.toString(gameController.board.width));
         jsonBoard.put("height", Integer.toString(gameController.board.height));
+        jsonBoard.put("phase", board.getPhase().toString());
+        jsonBoard.put("currentPlayer", Integer.toString(gameController.board.getPlayerNumber(gameController.board.getCurrentPlayer())));
+        jsonBoard.put("currentStep", Integer.toString(gameController.board.getStep()));
 
         JSONObject save = new JSONObject();
         save.put("board", jsonBoard);
@@ -420,7 +447,7 @@ public class AppController implements Observer {
             board.setObstacle();
         }
 
-        gameController.startProgrammingPhase();
+        gameController.loadProgrammingPhase(save);
 
         roboRally.createBoardView(gameController);
     }
