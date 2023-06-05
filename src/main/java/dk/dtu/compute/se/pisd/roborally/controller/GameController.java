@@ -27,6 +27,8 @@ import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Wall;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Gear;
 import org.jetbrains.annotations.NotNull;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -98,6 +100,47 @@ public class GameController {
                     field.setCard(generateRandomCommandCard());
                     field.setVisible(true);
                 }
+            }
+        }
+    }
+
+    public void loadProgrammingPhase(JSONObject save) {
+        JSONObject savedBoard = (JSONObject) save.get("board");
+        JSONArray players = (JSONArray) save.get("players");
+
+        board.setPhase(Phase.valueOf((String) savedBoard.get("phase")));
+        board.setCurrentPlayer(board.getPlayer(Integer.parseInt((String) savedBoard.get("currentPlayer"))));
+        board.setStep(Integer.parseInt((String) savedBoard.get("currentStep")));
+
+        for (Object player : players) {
+            Player boardPlayer = board.getPlayer(Integer.parseInt((String) ((JSONObject) player).get("ID")));
+            ArrayList<String> playerHand = (ArrayList<String>) ((JSONObject) player).get("playerHand");
+            ArrayList<String> programHand = (ArrayList<String>) ((JSONObject) player).get("programHand");
+
+            for (int j = 0; j < Player.NO_REGISTERS; j++) {
+                CommandCardField field = boardPlayer.getProgramField(j);
+                String stringCard = programHand.get(j);
+                if (stringCard == null) {
+                    field.setCard(null);
+                } else {
+                    CommandCard commandCard = new CommandCard(Command.valueOf(programHand.get(j)));
+                    field.setCard(commandCard);
+                }
+
+                field.setVisible(true);
+            }
+
+            for (int j = 0; j < Player.NO_CARDS; j++) {
+                CommandCardField field = boardPlayer.getCardField(j);
+                String stringCard = playerHand.get(j);
+                if (stringCard == null) {
+                    field.setCard(null);
+                } else {
+                    CommandCard commandCard = new CommandCard(Command.valueOf(playerHand.get(j)));
+                    field.setCard(commandCard);
+                }
+
+                field.setVisible(true);
             }
         }
     }
