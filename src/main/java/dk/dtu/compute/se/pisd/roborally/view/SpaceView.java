@@ -29,11 +29,16 @@ import dk.dtu.compute.se.pisd.roborally.model.Space;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.StrokeLineCap;
 import org.jetbrains.annotations.NotNull;
+
+import java.awt.*;
 
 /**
  * ...
@@ -46,11 +51,14 @@ public class SpaceView extends StackPane implements ViewObserver {
     final public static int SPACE_HEIGHT = 60; // 75;
     final public static int SPACE_WIDTH = 60; // 75;
 
+
     public final Space space;
+    private final ImageView backgroundImage;
 
 
     public SpaceView(@NotNull Space space) {
         this.space = space;
+        backgroundImage = new ImageView();
 
         // XXX the following styling should better be done with styles
         this.setPrefWidth(SPACE_WIDTH);
@@ -61,7 +69,7 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
 
-        this.setStyle("-fx-background-color: rgba(0,0,0,0);");
+        getChildren().add(backgroundImage);
 
 
         // updatePlayer();
@@ -86,7 +94,9 @@ public class SpaceView extends StackPane implements ViewObserver {
             }
 
             arrow.setRotate((90*player.getHeading().ordinal())%360);
+           this.getChildren().add(backgroundImage);
             this.getChildren().add(arrow);
+
         }
     }
 
@@ -111,8 +121,25 @@ public class SpaceView extends StackPane implements ViewObserver {
     @Override
     public void updateView(Subject subject) {
         if (subject == this.space) {
+            updateBackgroundImage();
             updatePlayer();
         }
     }
+private void updateBackgroundImage() {
+    Image fieldImage = new Image("C:\\Users\\Madsh\\OneDrive\\Skrivebord\\floor_tile.JPG");
+
+    BackgroundImage backgroundImage = new BackgroundImage(
+            fieldImage,
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundPosition.DEFAULT,
+            new BackgroundSize(SPACE_WIDTH, SPACE_HEIGHT, false, false, false, false)
+    );
+    Background background = new Background(backgroundImage);
+    setBackground(background);
+}
+
+
 
 }
+

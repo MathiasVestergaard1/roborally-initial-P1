@@ -332,7 +332,6 @@ public class GameController {
                 case UTURN:
                     this.turnLeft(player);
                     this.turnLeft(player);
-                    break;
                 case FASTEST_FORWARD:
                     this.fastForward(player);
                     this.moveForward(player);
@@ -381,7 +380,10 @@ public class GameController {
                }
             movePlayerOnConveyor(player);
             MovePlayerOnGear(player);
+            /*
             PlayerCheckpoint(player);
+            /**
+             */
                 // XXX note that this removes an other player from the space, when there
                 //     is another player on the target. Eventually, this needs to be
                 //     implemented in a way so that other players are pushed away
@@ -445,6 +447,7 @@ public class GameController {
             player.setHeading(heading);
         }
     }
+    /*
     public void PlayerCheckpoint(Player player){
         Space space = player.getSpace();
         if (player != null && player.board == board && space != null){
@@ -452,7 +455,7 @@ public class GameController {
                 return;
             }
             player.IncreaseCheckpoint();
-            player.getCheckpointCounter();{
+            player.getCheckpointCounter(){
                 if (player.getCheckpointCounter() == 4) {
                     endGame();
                 }
@@ -461,7 +464,7 @@ public class GameController {
             }
         }
     }
-
+/**
 
     /**
      * @param player checks if there is a wall in front of the player.
