@@ -326,6 +326,7 @@ public class AppController implements Observer {
         jsonBoard.put("phase", board.getPhase().toString());
         jsonBoard.put("currentPlayer", Integer.toString(gameController.board.getPlayerNumber(gameController.board.getCurrentPlayer())));
         jsonBoard.put("currentStep", Integer.toString(gameController.board.getStep()));
+        jsonBoard.put("stepMode", gameController.board.isStepMode());
 
         JSONObject save = new JSONObject();
         save.put("board", jsonBoard);
