@@ -332,6 +332,7 @@ public class GameController {
                 case UTURN:
                     this.turnLeft(player);
                     this.turnLeft(player);
+                    break;
                 case FASTEST_FORWARD:
                     this.fastForward(player);
                     this.moveForward(player);
@@ -451,7 +452,7 @@ public class GameController {
                 return;
             }
             player.IncreaseCheckpoint();
-            player.getCheckpointCounter(){
+            player.getCheckpointCounter();{
                 if (player.getCheckpointCounter() == 4) {
                     endGame();
                 }
