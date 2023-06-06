@@ -32,6 +32,7 @@ import org.json.simple.JSONObject;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * ...
@@ -108,10 +109,6 @@ public class GameController {
         JSONObject savedBoard = (JSONObject) save.get("board");
         JSONArray players = (JSONArray) save.get("players");
 
-        board.setPhase(Phase.valueOf((String) savedBoard.get("phase")));
-        board.setCurrentPlayer(board.getPlayer(Integer.parseInt((String) savedBoard.get("currentPlayer"))));
-        board.setStep(Integer.parseInt((String) savedBoard.get("currentStep")));
-
         for (Object player : players) {
             Player boardPlayer = board.getPlayer(Integer.parseInt((String) ((JSONObject) player).get("ID")));
             ArrayList<String> playerHand = (ArrayList<String>) ((JSONObject) player).get("playerHand");
@@ -143,6 +140,15 @@ public class GameController {
                 field.setVisible(true);
             }
         }
+        if (Objects.equals(savedBoard.get("phase"), "ACTIVATION")) {
+            makeProgramFieldsInvisible();
+            makeProgramFieldsVisible(Integer.parseInt((String) savedBoard.get("currentStep")));
+        }
+
+        board.setPhase(Phase.valueOf((String) savedBoard.get("phase")));
+        board.setCurrentPlayer(board.getPlayer(Integer.parseInt((String) savedBoard.get("currentPlayer"))));
+        board.setStep(Integer.parseInt((String) savedBoard.get("currentStep")));
+        board.setStepMode((Boolean) savedBoard.get("stepMode"));
     }
 
     // XXX: V2 
