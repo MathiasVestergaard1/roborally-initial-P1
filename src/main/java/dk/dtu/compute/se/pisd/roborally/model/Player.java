@@ -45,6 +45,8 @@ public class Player extends Subject {
     private Space space;
     private Heading heading = SOUTH;
 
+    private int checkpointCounter = 0;
+
     private CommandCardField[] program;
     private CommandCardField[] cards;
 
@@ -124,6 +126,15 @@ public class Player extends Subject {
             }
         }
     }
+
+    public int getCheckpointCounter(){
+        return checkpointCounter;
+    }
+
+    public void IncreaseCheckpoint(){
+        checkpointCounter++;
+    }
+
 
     public CommandCardField getProgramField(int i) {
         return program[i];

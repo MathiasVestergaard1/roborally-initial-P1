@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.Checkpoint;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Conveyor;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Wall;
@@ -379,6 +380,7 @@ public class GameController {
                }
             movePlayerOnConveyor(player);
             MovePlayerOnGear(player);
+            PlayerCheckpoint(player);
                 // XXX note that this removes an other player from the space, when there
                 //     is another player on the target. Eventually, this needs to be
                 //     implemented in a way so that other players are pushed away
@@ -440,6 +442,22 @@ public class GameController {
             Heading heading = player.getHeading();
             heading = heading.next();
             player.setHeading(heading);
+        }
+    }
+    public void PlayerCheckpoint(Player player){
+        Space space = player.getSpace();
+        if (player != null && player.board == board && space != null){
+            if (space.getObstacle() == null || !(space.getObstacle() instanceof Checkpoint)){
+                return;
+            }
+            player.IncreaseCheckpoint();
+            player.getCheckpointCounter(){
+                if (player.getCheckpointCounter() == 4) {
+                    endGame();
+                }
+
+
+            }
         }
     }
 

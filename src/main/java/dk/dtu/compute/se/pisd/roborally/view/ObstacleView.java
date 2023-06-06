@@ -2,13 +2,11 @@ package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
-import dk.dtu.compute.se.pisd.roborally.model.obstacles.Conveyor;
-import dk.dtu.compute.se.pisd.roborally.model.obstacles.Gear;
-import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
-import dk.dtu.compute.se.pisd.roborally.model.obstacles.Wall;
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.*;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import org.jetbrains.annotations.NotNull;
 
@@ -93,6 +91,14 @@ public class ObstacleView extends SpaceView implements ViewObserver {
             }
             this.getChildren().add(gear);
 
+        }
+        else if (obstacle instanceof Checkpoint){
+            Circle checkpoint = new Circle(20);
+            try {
+                checkpoint.setFill(Color.valueOf(obstacle.getColor()));
+            }catch (Exception e){
+                this.getChildren().add(checkpoint);
+            }
         }
     }
 
