@@ -21,6 +21,7 @@
  */
 package dk.dtu.compute.se.pisd.roborally.controller;
 
+import dk.dtu.compute.se.pisd.roborally.RoboRally;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Checkpoint;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Conveyor;
@@ -44,9 +45,12 @@ import java.util.Objects;
 public class GameController {
 
     final public Board board;
+    final private AppController appController;
+    private ArrayList<Space> checkpointPositions = new ArrayList<>();
 
-    public GameController(@NotNull Board board) {
+    public GameController(@NotNull Board board, AppController appController) {
         this.board = board;
+        this.appController = appController;
     }
 
     /**
@@ -106,9 +110,28 @@ public class GameController {
         }
     }
 
+    public void setCheckpointPositions(JSONArray checkpoints) {
+
+        for (int i = 0; i < checkpoints.size(); i++) {
+            JSONObject checkpoint = (JSONObject) checkpoints.get(i);
+            JSONObject position = (JSONObject) checkpoint.get("position");
+            System.out.println(checkpoint.toJSONString());
+            Space space = board.getSpace(Integer.parseInt((String) position.get("x")), Integer.parseInt((String) position.get("y")));
+
+            this.checkpointPositions.add(space);
+        }
+    }
+
+    public ArrayList<Space> getCheckpointPositions() {
+        return this.checkpointPositions;
+    }
+
     public void loadPhase(JSONObject save) {
         JSONObject savedBoard = (JSONObject) save.get("board");
         JSONArray players = (JSONArray) save.get("players");
+        JSONArray checkpoints = (JSONArray) save.get("checkpoints");
+
+        setCheckpointPositions(checkpoints);
 
         for (Object player : players) {
             Player boardPlayer = board.getPlayer(Integer.parseInt((String) ((JSONObject) player).get("ID")));
@@ -380,10 +403,8 @@ public class GameController {
                }
             movePlayerOnConveyor(player);
             MovePlayerOnGear(player);
-            /*
             PlayerCheckpoint(player);
-            /**
-             */
+
                 // XXX note that this removes an other player from the space, when there
                 //     is another player on the target. Eventually, this needs to be
                 //     implemented in a way so that other players are pushed away
@@ -447,20 +468,39 @@ public class GameController {
             player.setHeading(heading);
         }
     }
-    /*
-    public void PlayerCheckpoint(Player player){
+
+
+    public void spawnNewCheckpoint(Space space) {
+        int randomNumber = (int) (Math.random() * checkpointPositions.size());
+        if (checkpointPositions.get(randomNumber) == space) {
+            if (randomNumber == 0) {
+                randomNumber++;
+            } else {
+                randomNumber--;
+            }
+        }
+
+        Space newSpace = checkpointPositions.get(randomNumber);
+        space.setObstacle(null);
+
+        Obstacle obstacle = new Checkpoint(space, "Green", Heading.SOUTH);
+        newSpace.setObstacle(obstacle);
+
+        appController.update(board);
+    }
+
+    public void PlayerCheckpoint(Player player) {
         Space space = player.getSpace();
         if (player != null && player.board == board && space != null){
             if (space.getObstacle() == null || !(space.getObstacle() instanceof Checkpoint)){
                 return;
             }
             player.IncreaseCheckpoint();
-            player.getCheckpointCounter(){
-                if (player.getCheckpointCounter() == 4) {
-                    endGame();
-                }
 
-
+            if (player.getCheckpointCounter() == 4) {
+                endGame();
+            } else {
+                spawnNewCheckpoint(space);
             }
         }
     }
@@ -600,6 +640,10 @@ public class GameController {
                 startProgrammingPhase();
             }
         }
+    }
+
+    private void endGame() {
+        appController.gameWon();
     }
 
     /**

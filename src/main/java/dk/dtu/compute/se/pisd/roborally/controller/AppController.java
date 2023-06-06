@@ -28,6 +28,7 @@ import dk.dtu.compute.se.pisd.roborally.RoboRally;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
 
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.Checkpoint;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Conveyor;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Gear;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
@@ -119,7 +120,7 @@ public class AppController implements Observer {
 
         if (defaultGame) {
             Board board = new Board(8, 8);
-            gameController = new GameController(board);
+            gameController = new GameController(board, this);
             int no = result.get();
             for (int i = 0; i < no; i++) {
                 Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
@@ -147,7 +148,8 @@ public class AppController implements Observer {
             JSONObject jsonBoard = (JSONObject) boardConfig.get("board");
 
             Board board = new Board(Integer.parseInt((String) jsonBoard.get("width")), Integer.parseInt((String) jsonBoard.get("height")));
-            gameController = new GameController(board);
+            gameController = new GameController(board, this);
+            gameController.setCheckpointPositions((JSONArray) boardConfig.get("checkpoints"));
 
             JSONArray jsonObstacles = (JSONArray) boardConfig.get("obstacles");
 
@@ -177,17 +179,18 @@ public class AppController implements Observer {
                     case ("Wall") -> {
                         obstacle = new Wall(space, "Blue", heading);
                     }
+                    case ("Checkpoint") -> {
+                        obstacle = new Checkpoint(space, "Green", heading);
+                    }
                 }
                 space.setObstacle(obstacle);
                 board.setObstacle();
             }
         }
 
-    // XXX: V2
-    // board.setCurrentPlayer(board.getPlayer(0));
-    gameController.startProgrammingPhase();
+        gameController.startProgrammingPhase();
 
-    roboRally.createBoardView(gameController);
+        roboRally.createBoardView(gameController);
     }
 
 
@@ -314,9 +317,22 @@ public class AppController implements Observer {
                 jsonObstacle.put("type", "Gear");
             } else if (space.getObstacle() instanceof Wall) {
                 jsonObstacle.put("type", "Wall");
+            } else if (space.getObstacle() instanceof Checkpoint) {
+                jsonObstacle.put("type", "Checkpoint");
             }
 
             jsonObstacles.add(jsonObstacle);
+        }
+
+        JSONArray jsonCheckpoints = new JSONArray();
+
+        for (Space space : gameController.getCheckpointPositions()) {
+            JSONObject jsonCheckpoint = new JSONObject();
+
+            jsonCheckpoint.put("x", space.x);
+            jsonCheckpoint.put("y", space.y);
+
+            jsonCheckpoints.add(jsonCheckpoint);
         }
 
         JSONObject jsonBoard = new JSONObject();
@@ -332,6 +348,7 @@ public class AppController implements Observer {
         save.put("board", jsonBoard);
         save.put("players", jsonPlayers);
         save.put("obstacles", jsonObstacles);
+        save.put("checkpoints", jsonCheckpoints);
 
         saves.put(saveName, save);
 
@@ -410,7 +427,7 @@ public class AppController implements Observer {
         JSONObject jsonBoard = (JSONObject) save.get("board");
 
         Board board = new Board(Integer.parseInt((String) jsonBoard.get("width")), Integer.parseInt((String) jsonBoard.get("height")));
-        gameController = new GameController(board);
+        gameController = new GameController(board, this);
 
         JSONArray jsonPlayers = (JSONArray) save.get("players");
         JSONArray jsonObstacles = (JSONArray) save.get("obstacles");
@@ -443,6 +460,9 @@ public class AppController implements Observer {
                 case ("Wall") -> {
                     obstacle = new Wall(space, "Blue", heading);
                 }
+                case ("Checkpoint") -> {
+                    obstacle = new Checkpoint(space, "Green", heading);
+                }
             }
             space.setObstacle(obstacle);
             board.setObstacle();
@@ -451,6 +471,37 @@ public class AppController implements Observer {
         gameController.loadPhase(save);
 
         roboRally.createBoardView(gameController);
+    }
+
+    public void gameWon() {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        List<Player> players = gameController.board.getPlayers();
+        String winner = null;
+        StringBuilder leaderboard = new StringBuilder();
+        for (int i = 0; i < players.size(); i++) {
+            Player player = players.get(i);
+            int points = player.getCheckpointCounter();
+            if (points == 4) {
+               winner = player.getName();
+            } else {
+                if (i > 0 && points > players.get(i-1).getCheckpointCounter()) {
+                    leaderboard.insert(0, player.getName() + ": " + points + "\n");
+                } else {
+                    leaderboard.append("\n").append(player.getName()).append(": ").append(points);
+                }
+            }
+        }
+        leaderboard.insert(0, winner + ": 4\n");
+
+        alert.setTitle(winner + " wins!");
+        alert.setHeaderText("The game is over\n" + winner + " won the game");
+        alert.setContentText(String.valueOf(leaderboard));
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent()) {
+            gameController = null;
+            roboRally.createBoardView(null);
+        }
     }
 
     /**
@@ -501,7 +552,7 @@ public class AppController implements Observer {
 
     @Override
     public void update(Subject subject) {
-        // XXX do nothing for now
+        roboRally.createBoardView(gameController);
     }
 
 }

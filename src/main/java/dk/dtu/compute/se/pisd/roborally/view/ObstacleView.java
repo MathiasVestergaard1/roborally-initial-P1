@@ -97,8 +97,9 @@ public class ObstacleView extends SpaceView implements ViewObserver {
             try {
                 checkpoint.setFill(Color.valueOf(obstacle.getColor()));
             }catch (Exception e){
-                this.getChildren().add(checkpoint);
+                checkpoint.setFill(Color.MEDIUMPURPLE);
             }
+            this.getChildren().add(checkpoint);
         }
     }
 
