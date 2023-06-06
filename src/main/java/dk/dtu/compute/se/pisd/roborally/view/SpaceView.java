@@ -40,6 +40,7 @@ import javafx.scene.shape.StrokeLineCap;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.io.File;
 
 /**
  * ...
@@ -129,7 +130,8 @@ public class SpaceView extends StackPane implements ViewObserver {
     }
 
     private void updateBackgroundImage() {
-        Image fieldImage = new Image("C:\\Users\\Madsh\\OneDrive\\Skrivebord\\floor_tile.JPG");
+        String filepath = new File("images/floor_tile.JPG").getAbsolutePath();
+        Image fieldImage = new Image(filepath);
 
         BackgroundImage backgroundImage = new BackgroundImage(
                 fieldImage,
