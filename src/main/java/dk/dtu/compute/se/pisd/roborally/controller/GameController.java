@@ -105,7 +105,7 @@ public class GameController {
         }
     }
 
-    public void loadProgrammingPhase(JSONObject save) {
+    public void loadPhase(JSONObject save) {
         JSONObject savedBoard = (JSONObject) save.get("board");
         JSONArray players = (JSONArray) save.get("players");
 

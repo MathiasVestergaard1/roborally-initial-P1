@@ -448,7 +448,7 @@ public class AppController implements Observer {
             board.setObstacle();
         }
 
-        gameController.loadProgrammingPhase(save);
+        gameController.loadPhase(save);
 
         roboRally.createBoardView(gameController);
     }
