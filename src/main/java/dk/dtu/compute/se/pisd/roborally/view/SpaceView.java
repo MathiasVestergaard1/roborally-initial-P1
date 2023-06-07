@@ -130,7 +130,7 @@ public class SpaceView extends StackPane implements ViewObserver {
     }
 
     private void updateBackgroundImage() {
-        String filepath = new File("images/floor_tile.JPG").getAbsolutePath();
+        String filepath = new File("images/floor_tile.JPG").toURI().toString();
         Image fieldImage = new Image(filepath);
 
         BackgroundImage backgroundImage = new BackgroundImage(
