@@ -1,0 +1,43 @@
+{
+  "boards": {
+    "board1": {
+      "board": {
+        "width": "8",
+        "height": "8"
+      },
+      "obstacles": [
+        {
+          "heading": "SOUTH",
+          "position": { "x": "5", "y": "5" },
+          "type": "Checkpoint"
+        },
+        {
+          "heading": "SOUTH",
+          "position": { "x": "4", "y": "4" },
+          "type": "Gear"
+        },
+        {
+          "heading": "SOUTH",
+          "position": { "x": "2", "y": "5" },
+          "type": "Wall"
+        },
+        {
+          "heading": "SOUTH",
+          "position": { "x": "5", "y": "7" },
+          "type": "Conveyor"
+        }
+      ],
+      "checkpoints": [
+        {
+          "position": {"x": "6", "y": "6"}
+        },
+        {
+          "position": {"x": "7", "y": "7"}
+        },
+        {
+          "position": {"x": "4", "y": "4"}
+        }
+      ]
+    }
+  }
+}
