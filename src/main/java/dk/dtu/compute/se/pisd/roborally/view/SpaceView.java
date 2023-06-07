@@ -22,25 +22,22 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.Conveyor;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Checkpoint;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.Gear;
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.Wall;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.StrokeLineCap;
 import org.jetbrains.annotations.NotNull;
-
-import java.awt.*;
-import java.io.File;
 
 /**
  * ...
@@ -50,15 +47,14 @@ import java.io.File;
  */
 public class SpaceView extends StackPane implements ViewObserver {
 
-    final public static int SPACE_HEIGHT = 60; // 75;
-    final public static int SPACE_WIDTH = 60; // 75;
+    final public static int SPACE_HEIGHT = 75; // 60; // 75;
+    final public static int SPACE_WIDTH = 75;  // 60; // 75;
 
     public final Space space;
-    private final ImageView backgroundImage;
+
 
     public SpaceView(@NotNull Space space) {
         this.space = space;
-        backgroundImage = new ImageView();
 
         // XXX the following styling should better be done with styles
         this.setPrefWidth(SPACE_WIDTH);
@@ -69,10 +65,17 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
 
-        getChildren().add(backgroundImage);
+        if ((space.x + space.y) % 2 == 0) {
+            this.setStyle("-fx-background-color: white;");
+        } else {
+            this.setStyle("-fx-background-color: black;");
+        }
+
+        // updatePlayer();
 
         // This space view should listen to changes of the space
         space.attach(this);
+        updateBackgroundImage();
         update(space);
     }
 
@@ -84,32 +87,33 @@ public class SpaceView extends StackPane implements ViewObserver {
 
         // Add the checkpoint if it exists
         drawCheckpoint();
+        drawConveyor();
+        drawGear();
+        drawWall();
 
         Player player = space.getPlayer();
         if (player != null) {
             Polygon arrow = new Polygon(0.0, 0.0,
                     10.0, 20.0,
-                    20.0, 0.0);
+                    20.0, 0.0 );
             try {
                 arrow.setFill(Color.valueOf(player.getColor()));
             } catch (Exception e) {
                 arrow.setFill(Color.MEDIUMPURPLE);
             }
 
-            arrow.setRotate((90 * player.getHeading().ordinal()) % 360);
+            arrow.setRotate((90*player.getHeading().ordinal())%360);
             this.getChildren().add(arrow);
         }
     }
 
     private void drawCheckpoint() {
-        this.getChildren().removeIf(node -> node instanceof Polygon);
 
         Obstacle obstacle = space.getObstacle();
         if (obstacle instanceof Checkpoint) {
-            Polygon checkpoint = new Polygon(0.0, 0.0,
-                    20.0, 0.0,
-                    20.0, 20.0,
-                    0.0, 20.0);
+            this.getChildren().removeIf(node -> node instanceof Circle);
+
+            Circle checkpoint = new Circle(20.0);
             try {
                 checkpoint.setFill(Color.valueOf(obstacle.getColor()));
             } catch (Exception e) {
@@ -121,26 +125,88 @@ public class SpaceView extends StackPane implements ViewObserver {
         }
     }
 
+    private void drawConveyor() {
+
+        Obstacle obstacle = space.getObstacle();
+        if (obstacle instanceof  Conveyor) {
+            this.getChildren().removeIf(node -> node instanceof Polygon);
+
+            Polygon conveyor = new Polygon(0.0, 0.0,
+                    20.0, 0.0,
+                    20.0, 40.0,
+                    0.0, 40.0);
+            try {
+                conveyor.setFill((Color.valueOf(obstacle.getColor())));
+            } catch (Exception e) {
+                conveyor.setFill(Color.MEDIUMPURPLE);
+            }
+            conveyor.setRotate((90 * obstacle.getHeading().ordinal()) % 360);
+            this.getChildren().add(conveyor);
+
+        }
+    }
+
+    private void drawGear() {
+
+        Obstacle obstacle = space.getObstacle();
+        if (obstacle instanceof Gear) {
+            this.getChildren().removeIf(node -> node instanceof Polygon);
+
+            Polygon gear = new Polygon(-15.0, 5.0,
+                    -15.0, 5.0,
+                    15.0, 10.0,
+                    -15.0, 10.0);
+            try {
+                gear.setFill(((Color.valueOf(obstacle.getColor()))));
+            } catch (Exception e) {
+                gear.setFill(Color.MEDIUMPURPLE);
+            }
+            gear.setRotate((90 * obstacle.getHeading().ordinal()) % 360);
+            this.getChildren().add(gear);
+        }
+    }
+
+    private void drawWall() {
+
+        Obstacle obstacle = space.getObstacle();
+        if (obstacle instanceof  Wall) {
+            this.getChildren().removeIf(node -> node instanceof Polygon);
+
+            Polygon wall = new Polygon(-30.0, 0.0,
+                    30.0, 0.0,
+                    30.0, 10.0,
+                    -30.0, 10.0);
+            try {
+                wall.setFill(((Color.valueOf(obstacle.getColor()))));
+            } catch (Exception e) {
+                wall.setFill(Color.BLACK);
+            }
+            switch (obstacle.getHeading()) {
+                case NORTH -> {
+                    wall.setTranslateY(-30);
+                }
+                case SOUTH -> {
+                    wall.setTranslateY(30);
+                }
+                case EAST -> {
+                    wall.setTranslateX(30);
+                }
+                case WEST -> {
+                    wall.setTranslateX(-30);
+                }
+            }
+            wall.setRotate((90*obstacle.getHeading().ordinal())%360);
+            this.getChildren().add(wall);
+        }
+    }
+
+
+
     @Override
     public void updateView(Subject subject) {
         if (subject == this.space) {
-            updateBackgroundImage();
             updatePlayer();
         }
     }
 
-    private void updateBackgroundImage() {
-        String filepath = new File("images/floor_tile.JPG").toURI().toString();
-        Image fieldImage = new Image(filepath);
-
-        BackgroundImage backgroundImage = new BackgroundImage(
-                fieldImage,
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.DEFAULT,
-                new BackgroundSize(SPACE_WIDTH, SPACE_HEIGHT, false, false, false, false)
-        );
-        Background background = new Background(backgroundImage);
-        setBackground(background);
-    }
 }
