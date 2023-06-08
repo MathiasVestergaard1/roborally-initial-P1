@@ -30,12 +30,10 @@ import dk.dtu.compute.se.pisd.roborally.model.obstacles.Checkpoint;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
 import javafx.scene.shape.StrokeLineCap;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,11 +52,9 @@ public class SpaceView extends StackPane implements ViewObserver {
     final public static int SPACE_WIDTH = 60; // 75;
 
     public final Space space;
-    private final ImageView backgroundImage;
 
     public SpaceView(@NotNull Space space) {
         this.space = space;
-        backgroundImage = new ImageView();
 
         // XXX the following styling should better be done with styles
         this.setPrefWidth(SPACE_WIDTH);
@@ -69,8 +65,6 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
 
-        getChildren().add(backgroundImage);
-
         // This space view should listen to changes of the space
         space.attach(this);
         update(space);
@@ -78,12 +72,6 @@ public class SpaceView extends StackPane implements ViewObserver {
 
     private void updatePlayer() {
         this.getChildren().clear();
-
-        // Add the background image first
-        this.getChildren().add(backgroundImage);
-
-        // Add the checkpoint if it exists
-        drawCheckpoint();
 
         Player player = space.getPlayer();
         if (player != null) {
@@ -97,50 +85,15 @@ public class SpaceView extends StackPane implements ViewObserver {
             }
 
             arrow.setRotate((90 * player.getHeading().ordinal()) % 360);
+
             this.getChildren().add(arrow);
-        }
-    }
-
-    private void drawCheckpoint() {
-        this.getChildren().removeIf(node -> node instanceof Polygon);
-
-        Obstacle obstacle = space.getObstacle();
-        if (obstacle instanceof Checkpoint) {
-            Polygon checkpoint = new Polygon(0.0, 0.0,
-                    20.0, 0.0,
-                    20.0, 20.0,
-                    0.0, 20.0);
-            try {
-                checkpoint.setFill(Color.valueOf(obstacle.getColor()));
-            } catch (Exception e) {
-                checkpoint.setFill(Color.MEDIUMPURPLE);
-            }
-
-            checkpoint.setRotate((90 * obstacle.getHeading().ordinal()) % 360);
-            this.getChildren().add(checkpoint);
         }
     }
 
     @Override
     public void updateView(Subject subject) {
         if (subject == this.space) {
-            updateBackgroundImage();
             updatePlayer();
         }
-    }
-
-    private void updateBackgroundImage() {
-        String filepath = new File("images/floor_tile.JPG").toURI().toString();
-        Image fieldImage = new Image(filepath);
-
-        BackgroundImage backgroundImage = new BackgroundImage(
-                fieldImage,
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.DEFAULT,
-                new BackgroundSize(SPACE_WIDTH, SPACE_HEIGHT, false, false, false, false)
-        );
-        Background background = new Background(backgroundImage);
-        setBackground(background);
     }
 }

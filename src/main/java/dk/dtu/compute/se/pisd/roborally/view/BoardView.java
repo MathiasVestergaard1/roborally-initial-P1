@@ -73,8 +73,8 @@ public class BoardView extends VBox implements ViewObserver {
         for (int x = 0; x < board.width; x++) {
             for (int y = 0; y < board.height; y++) {
                 Space space = board.getSpace(x, y);
-                SpaceView spaceView = new SpaceView(space);
                 ObstacleView obstacleView = new ObstacleView(space);
+                SpaceView spaceView = new SpaceView(space);
                 obstacles[x][y] = obstacleView;
                 spaces[x][y] = spaceView;
                 mainBoardPane.add(obstacleView, x, y);
