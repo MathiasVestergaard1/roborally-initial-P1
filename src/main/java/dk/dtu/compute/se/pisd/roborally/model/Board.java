@@ -45,8 +45,6 @@ public class Board extends Subject {
 
     private Integer gameId;
 
-    private Checkpoint checkpoint;
-
     private final Space[][] spaces;
 
     private final List<Player> players = new ArrayList<>();
@@ -71,8 +69,6 @@ public class Board extends Subject {
             }
         }
         this.stepMode = false;
-
-        this.checkpoint = new Checkpoint(this, ((int) (Math.random() * width )), ((int) (Math.random() * height)));
 
     }
 

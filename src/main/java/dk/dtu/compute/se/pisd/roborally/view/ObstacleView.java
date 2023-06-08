@@ -39,64 +39,73 @@ public class ObstacleView extends SpaceView implements ViewObserver {
     }
 
     private void updateObstacles() {
+        getChildren().removeIf(node -> node instanceof ImageView);
+
         Obstacle obstacle = space.getObstacle();
         if (obstacle instanceof Conveyor) {
-            Polygon conveyor = new Polygon(0.0, 0.0,
-                    20.0, 0.0,
-                    20.0, 40.0,
-                    0.0, 40.0);
+            ImageView conveyor = new ImageView();
             try {
-                conveyor.setFill(Color.valueOf(obstacle.getColor()));
+                String imageFilepath = "C:\\Users\\Madsh\\OneDrive\\Skrivebord\\conveyor.JPG";
+                Image image = new Image(new File(imageFilepath).toURI().toString());
+                conveyor.setImage(image);
+                conveyor.setFitHeight(50);
+                conveyor.setFitWidth(50);
+
             } catch (Exception e) {
-                conveyor.setFill(Color.MEDIUMPURPLE);
             }
 
             conveyor.setRotate((90*obstacle.getHeading().ordinal())%360);
             this.getChildren().add(conveyor);
         } else if (obstacle instanceof Wall) {
-            Polygon wall = new Polygon(-30.0, 0.0,
-                    30.0, 0.0,
-                    30.0, 10.0,
-                    -30.0, 10.0);
+            ImageView wall = new ImageView();
             try {
-                wall.setFill(Color.valueOf(obstacle.getColor()));
+                String imageFilePath = "C:\\Users\\Madsh\\OneDrive\\Skrivebord\\wall.JPG"; // Replace with the actual image file path
+                Image image = new Image(new File(imageFilePath).toURI().toString());
+                wall.setImage(image);
+                wall.setFitWidth(60);
+                wall.setFitHeight(60);
             } catch (Exception e) {
-                wall.setFill(Color.MEDIUMPURPLE);
             }
             switch (obstacle.getHeading()) {
                 case NORTH -> {
-                    wall.setTranslateY(-30);
+                    wall.setRotate(180);
                 }
                 case SOUTH -> {
-                    wall.setTranslateY(30);
+                    wall.setRotate(0);
                 }
                 case EAST -> {
-                    wall.setTranslateX(30);
+                    wall.setRotate(-90);
                 }
                 case WEST -> {
-                    wall.setTranslateX(-30);
+                    wall.setRotate(90);
                 }
             }
             wall.setRotate((90*obstacle.getHeading().ordinal())%360);
             this.getChildren().add(wall);
         } else if (obstacle instanceof Gear) {
-            Polygon gear = new Polygon(-30.0, 0.0,
-                    30.0, 0.0,
-                    30.0, 10.0,
-                    -30.0, 10.0);
+            ImageView gear = new ImageView();
             try {
-                gear.setFill(Color.valueOf(obstacle.getColor()));
+                String imageFilePath = "C:\\Users\\Madsh\\OneDrive\\Skrivebord\\gear.JPG";
+                Image image = new Image(new File(imageFilePath).toURI().toString());
+                gear.setImage(image);
+                gear.setFitWidth(60);
+                gear.setFitHeight(60);
             } catch (Exception e) {
-                gear.setFill(Color.MEDIUMPURPLE);
+                // Handle exception
             }
             this.getChildren().add(gear);
         }
-        else if (obstacle instanceof Checkpoint){
-            Circle checkpoint = new Circle(20);
+        else if (obstacle instanceof Checkpoint) {
+            ImageView checkpoint = new ImageView();
             try {
-                checkpoint.setFill(Color.valueOf(obstacle.getColor()));
-            }catch (Exception e){
-                checkpoint.setFill(Color.MEDIUMPURPLE);
+                String imageFilePath = "C:\\Users\\Madsh\\OneDrive\\Skrivebord\\checkpoint.JPG"; // Replace with the actual image file path
+                Image image = new Image(new File(imageFilePath).toURI().toString());
+                checkpoint.setImage(image);
+                checkpoint.setFitWidth(40);
+                checkpoint.setFitHeight(40);
+
+            } catch (Exception e) {
+                // Handle exception
             }
             this.getChildren().add(checkpoint);
         }
