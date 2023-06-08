@@ -45,8 +45,8 @@ public class ObstacleView extends SpaceView implements ViewObserver {
         if (obstacle instanceof Conveyor) {
             ImageView conveyor = new ImageView();
             try {
-                String imageFilepath = "C:\\Users\\Madsh\\OneDrive\\Skrivebord\\conveyor.JPG";
-                Image image = new Image(new File(imageFilepath).toURI().toString());
+                String imageFilePath = new File("images/conveyor.JPG").toURI().toString();
+                Image image = new Image(imageFilePath);
                 conveyor.setImage(image);
                 conveyor.setFitHeight(50);
                 conveyor.setFitWidth(50);
@@ -59,8 +59,8 @@ public class ObstacleView extends SpaceView implements ViewObserver {
         } else if (obstacle instanceof Wall) {
             ImageView wall = new ImageView();
             try {
-                String imageFilePath = "C:\\Users\\Madsh\\OneDrive\\Skrivebord\\wall.JPG"; // Replace with the actual image file path
-                Image image = new Image(new File(imageFilePath).toURI().toString());
+                String imageFilePath = new File("images/wall.JPG").toURI().toString();
+                Image image = new Image(imageFilePath);
                 wall.setImage(image);
                 wall.setFitWidth(60);
                 wall.setFitHeight(60);
@@ -85,8 +85,8 @@ public class ObstacleView extends SpaceView implements ViewObserver {
         } else if (obstacle instanceof Gear) {
             ImageView gear = new ImageView();
             try {
-                String imageFilePath = "C:\\Users\\Madsh\\OneDrive\\Skrivebord\\gear.JPG";
-                Image image = new Image(new File(imageFilePath).toURI().toString());
+                String imageFilePath = new File("images/gear.JPG").toURI().toString();
+                Image image = new Image(imageFilePath);
                 gear.setImage(image);
                 gear.setFitWidth(60);
                 gear.setFitHeight(60);
@@ -98,8 +98,8 @@ public class ObstacleView extends SpaceView implements ViewObserver {
         else if (obstacle instanceof Checkpoint) {
             ImageView checkpoint = new ImageView();
             try {
-                String imageFilePath = "C:\\Users\\Madsh\\OneDrive\\Skrivebord\\checkpoint.JPG"; // Replace with the actual image file path
-                Image image = new Image(new File(imageFilePath).toURI().toString());
+                String imageFilePath = new File("images/checkpoint.JPG").toURI().toString();
+                Image image = new Image(imageFilePath);
                 checkpoint.setImage(image);
                 checkpoint.setFitWidth(40);
                 checkpoint.setFitHeight(40);
