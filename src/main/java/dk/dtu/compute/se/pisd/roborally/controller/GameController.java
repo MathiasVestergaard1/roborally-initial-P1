@@ -488,7 +488,7 @@ public class GameController {
     }
 
 
-    public void spawnNewCheckpoint(Space space) {
+    public void spawnNewCheckpoint(Space space, int index) {
         int randomNumber = (int) (Math.random() * checkpointPositions.size());
         if (checkpointPositions.get(randomNumber) == space) {
             if (randomNumber == 0) {
@@ -499,7 +499,7 @@ public class GameController {
         }
 
         Space newSpace = checkpointPositions.get(randomNumber);
-        space.setObstacle(null);
+        space.removeObstacle(index);
 
         Obstacle obstacle = new Checkpoint(space, "Green", Heading.SOUTH);
         newSpace.setObstacle(obstacle);
@@ -512,9 +512,11 @@ public class GameController {
         if (player != null && player.board == board && space != null){
             ArrayList<Obstacle> obstacles = space.getObstacle();
             boolean obstacleFound = false;
+            int index = 0;
             for (int i=0; i< obstacles.size(); i++) {
                 if(obstacles.get(i) != null && obstacles.get(i) instanceof Checkpoint) {
                     obstacleFound = true;
+                    index = i;
                     break;
                 }
             }
@@ -526,7 +528,7 @@ public class GameController {
             if (player.getCheckpointCounter() == 4) {
                 endGame();
             } else {
-                spawnNewCheckpoint(space);
+                spawnNewCheckpoint(space, index);
             }
         }
     }
