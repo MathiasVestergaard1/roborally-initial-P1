@@ -428,12 +428,21 @@ public class GameController {
     public void movePlayerOnConveyor(Player player) {
         Space space = player.getSpace();
         if (player != null && player.board == board && space != null) {
-
-            if(space.getObstacle() == null || !(space.getObstacle() instanceof Conveyor)) {
+            ArrayList<Obstacle> obstacles = space.getObstacle();
+            int index = 0;
+            boolean obstacleFound = false;
+            for (int i=0; i< obstacles.size(); i++) {
+                if(obstacles.get(i) != null && obstacles.get(i) instanceof Conveyor) {
+                    obstacleFound = true;
+                    index = i;
+                    break;
+                }
+            }
+            if (!obstacleFound) {
                 return;
             }
 
-            Heading heading = space.getObstacle().getHeading();
+            Heading heading = obstacles.get(index).getHeading();
 
             ArrayList<Space> spacelist = new ArrayList<Space>();
             spacelist.add(space);
@@ -461,7 +470,15 @@ public class GameController {
     public void MovePlayerOnGear(Player player) {
         Space space = player.getSpace();
         if (player != null && player.board == board && space != null) {
-            if(space.getObstacle() == null || !(space.getObstacle() instanceof Gear)) {
+            ArrayList<Obstacle> obstacles = space.getObstacle();
+            boolean obstacleFound = false;
+            for (int i=0; i< obstacles.size(); i++) {
+                if(obstacles.get(i) != null && obstacles.get(i) instanceof Gear) {
+                    obstacleFound = true;
+                    break;
+                }
+            }
+            if (!obstacleFound) {
                 return;
             }
             Heading heading = player.getHeading();
@@ -493,7 +510,15 @@ public class GameController {
     public void PlayerCheckpoint(Player player) {
         Space space = player.getSpace();
         if (player != null && player.board == board && space != null){
-            if (space.getObstacle() == null || !(space.getObstacle() instanceof Checkpoint)){
+            ArrayList<Obstacle> obstacles = space.getObstacle();
+            boolean obstacleFound = false;
+            for (int i=0; i< obstacles.size(); i++) {
+                if(obstacles.get(i) != null && obstacles.get(i) instanceof Checkpoint) {
+                    obstacleFound = true;
+                    break;
+                }
+            }
+            if (!obstacleFound) {
                 return;
             }
             player.IncreaseCheckpoint();
@@ -515,23 +540,27 @@ public class GameController {
      */
     public boolean wallCheck(@NotNull Player player){
         Space space = player.getSpace();
-        Obstacle wall = space.getObstacle();
         Heading playerHeading = player.getHeading();
-        if(wall != null && wall instanceof Wall){
-            Heading wallHeading = wall.getHeading();
-            if(wallHeading == playerHeading){
-                return true;
+
+        ArrayList<Obstacle> obstacles = space.getObstacle();
+        for (Obstacle obstacle : obstacles) {
+            if (obstacle != null && obstacle instanceof Wall) {
+                Heading wallHeading = obstacle.getHeading();
+                if (wallHeading == playerHeading) {
+                    return true;
+                }
             }
         }
 
         Space nextSpace = board.getNeighbour(space, playerHeading);
-        Obstacle nextWall = nextSpace.getObstacle();
-        if(nextWall == null || !(nextWall instanceof Wall)){
-            return false;
-        }
-        Heading nextWallHeading = nextWall.getHeading().next().next();
-        if(nextWallHeading == playerHeading){
-            return true;
+        ArrayList<Obstacle> nextObstacles = nextSpace.getObstacle();
+        for (Obstacle nextObstacle : nextObstacles) {
+            if (nextObstacle != null && nextObstacle instanceof Wall) {
+                Heading wallHeading = nextObstacle.getHeading().next().next();
+                if (wallHeading == playerHeading) {
+                    return true;
+                }
+            }
         }
         return false;
     }

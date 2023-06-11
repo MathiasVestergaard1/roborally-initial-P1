@@ -15,6 +15,7 @@ import javafx.scene.image.Image;
 
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
 
 public class ObstacleView extends SpaceView implements ViewObserver {
 
@@ -41,73 +42,75 @@ public class ObstacleView extends SpaceView implements ViewObserver {
     private void updateObstacles() {
         getChildren().removeIf(node -> node instanceof ImageView);
 
-        Obstacle obstacle = space.getObstacle();
-        if (obstacle instanceof Conveyor) {
-            ImageView conveyor = new ImageView();
-            try {
-                String imageFilePath = new File("images/conveyor.JPG").toURI().toString();
-                Image image = new Image(imageFilePath);
-                conveyor.setImage(image);
-                conveyor.setFitHeight(50);
-                conveyor.setFitWidth(50);
+        ArrayList<Obstacle> obstacles = space.getObstacle();
+        for (Obstacle obstacle : obstacles) {
+            if (obstacle instanceof Conveyor) {
+                ImageView conveyor = new ImageView();
+                try {
+                    String imageFilePath = new File("images/conveyor.JPG").toURI().toString();
+                    Image image = new Image(imageFilePath);
+                    conveyor.setImage(image);
+                    conveyor.setFitHeight(50);
+                    conveyor.setFitWidth(50);
 
-            } catch (Exception e) {
-            }
+                } catch (Exception e) {
+                }
 
-            conveyor.setRotate((90*obstacle.getHeading().ordinal())%360);
-            this.getChildren().add(conveyor);
-        } else if (obstacle instanceof Wall) {
-            ImageView wall = new ImageView();
-            try {
-                String imageFilePath = new File("images/wall.JPG").toURI().toString();
-                Image image = new Image(imageFilePath);
-                wall.setImage(image);
-                wall.setFitWidth(60);
-                wall.setFitHeight(60);
-            } catch (Exception e) {
+                conveyor.setRotate((90*obstacle.getHeading().ordinal())%360);
+                this.getChildren().add(conveyor);
+            } else if (obstacle instanceof Wall) {
+                ImageView wall = new ImageView();
+                try {
+                    String imageFilePath = new File("images/wall.JPG").toURI().toString();
+                    Image image = new Image(imageFilePath);
+                    wall.setImage(image);
+                    wall.setFitWidth(60);
+                    wall.setFitHeight(60);
+                } catch (Exception e) {
+                }
+                switch (obstacle.getHeading()) {
+                    case NORTH -> {
+                        wall.setRotate(180);
+                    }
+                    case SOUTH -> {
+                        wall.setRotate(0);
+                    }
+                    case EAST -> {
+                        wall.setRotate(-90);
+                    }
+                    case WEST -> {
+                        wall.setRotate(90);
+                    }
+                }
+                wall.setRotate((90*obstacle.getHeading().ordinal())%360);
+                this.getChildren().add(wall);
+            } else if (obstacle instanceof Gear) {
+                ImageView gear = new ImageView();
+                try {
+                    String imageFilePath = new File("images/gear.JPG").toURI().toString();
+                    Image image = new Image(imageFilePath);
+                    gear.setImage(image);
+                    gear.setFitWidth(60);
+                    gear.setFitHeight(60);
+                } catch (Exception e) {
+                    // Handle exception
+                }
+                this.getChildren().add(gear);
             }
-            switch (obstacle.getHeading()) {
-                case NORTH -> {
-                    wall.setRotate(180);
-                }
-                case SOUTH -> {
-                    wall.setRotate(0);
-                }
-                case EAST -> {
-                    wall.setRotate(-90);
-                }
-                case WEST -> {
-                    wall.setRotate(90);
-                }
-            }
-            wall.setRotate((90*obstacle.getHeading().ordinal())%360);
-            this.getChildren().add(wall);
-        } else if (obstacle instanceof Gear) {
-            ImageView gear = new ImageView();
-            try {
-                String imageFilePath = new File("images/gear.JPG").toURI().toString();
-                Image image = new Image(imageFilePath);
-                gear.setImage(image);
-                gear.setFitWidth(60);
-                gear.setFitHeight(60);
-            } catch (Exception e) {
-                // Handle exception
-            }
-            this.getChildren().add(gear);
-        }
-        else if (obstacle instanceof Checkpoint) {
-            ImageView checkpoint = new ImageView();
-            try {
-                String imageFilePath = new File("images/checkpoint.JPG").toURI().toString();
-                Image image = new Image(imageFilePath);
-                checkpoint.setImage(image);
-                checkpoint.setFitWidth(40);
-                checkpoint.setFitHeight(40);
+            else if (obstacle instanceof Checkpoint) {
+                ImageView checkpoint = new ImageView();
+                try {
+                    String imageFilePath = new File("images/checkpoint.JPG").toURI().toString();
+                    Image image = new Image(imageFilePath);
+                    checkpoint.setImage(image);
+                    checkpoint.setFitWidth(40);
+                    checkpoint.setFitHeight(40);
 
-            } catch (Exception e) {
-                // Handle exception
+                } catch (Exception e) {
+                    // Handle exception
+                }
+                this.getChildren().add(checkpoint);
             }
-            this.getChildren().add(checkpoint);
         }
     }
 

@@ -301,27 +301,29 @@ public class AppController implements Observer {
         }
 
         for (Space space : spaces) {
-            JSONObject jsonObstacle = new JSONObject();
 
             JSONObject jsonSpace = new JSONObject();
 
             jsonSpace.put("x", Integer.toString(space.x));
             jsonSpace.put("y", Integer.toString(space.y));
+            ArrayList<Obstacle> obstacles = space.getObstacle();
 
-            jsonObstacle.put("heading", space.getObstacle().getHeading().toString());
-            jsonObstacle.put("position", jsonSpace);
+            for (Obstacle obstacle : obstacles) {
+                JSONObject jsonObstacle = new JSONObject();
+                jsonObstacle.put("heading", obstacle.getHeading().toString());
+                jsonObstacle.put("position", jsonSpace);
 
-            if (space.getObstacle() instanceof Conveyor) {
-                jsonObstacle.put("type", "Conveyor");
-            } else if (space.getObstacle() instanceof Gear) {
-                jsonObstacle.put("type", "Gear");
-            } else if (space.getObstacle() instanceof Wall) {
-                jsonObstacle.put("type", "Wall");
-            } else if (space.getObstacle() instanceof Checkpoint) {
-                jsonObstacle.put("type", "Checkpoint");
+                if (obstacle instanceof Conveyor) {
+                    jsonObstacle.put("type", "Conveyor");
+                } else if (obstacle instanceof Gear) {
+                    jsonObstacle.put("type", "Gear");
+                } else if (obstacle instanceof Wall) {
+                    jsonObstacle.put("type", "Wall");
+                } else if (obstacle instanceof Checkpoint) {
+                    jsonObstacle.put("type", "Checkpoint");
+                }
+                jsonObstacles.add(jsonObstacle);
             }
-
-            jsonObstacles.add(jsonObstacle);
         }
 
         JSONArray jsonCheckpoints = new JSONArray();

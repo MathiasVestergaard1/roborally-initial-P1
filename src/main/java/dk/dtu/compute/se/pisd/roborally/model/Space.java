@@ -24,6 +24,8 @@ package dk.dtu.compute.se.pisd.roborally.model;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
 
+import java.util.ArrayList;
+
 /**
  * ...
  *
@@ -38,13 +40,13 @@ public class Space extends Subject {
     public final int y;
 
     private Player player;
-    private Obstacle obstacle;
+    private ArrayList<Obstacle> obstacle;
 
     public Space(Board board, int x, int y) {
         this.board = board;
         this.x = x;
         this.y = y;
-        obstacle = null;
+        obstacle = new ArrayList<>();
         player = null;
     }
 
@@ -69,10 +71,10 @@ public class Space extends Subject {
     }
 
     public void setObstacle(Obstacle obstacle) {
-        this.obstacle = obstacle;
+        this.obstacle.add(obstacle);
     }
 
-    public Obstacle getObstacle() {
+    public ArrayList<Obstacle> getObstacle() {
         return this.obstacle;
     }
 
