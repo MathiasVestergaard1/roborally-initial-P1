@@ -168,7 +168,7 @@ public class AppController implements Observer {
 
                 Space space = board.getSpace(Integer.parseInt((String) jsonSpace.get("x")), Integer.parseInt((String) jsonSpace.get("y")));
                 Obstacle obstacle = null;
-
+                System.out.println(jsonSpace.toString());
                 switch (type) {
                     case ("Conveyor") -> {
                         obstacle = new Conveyor(space, "grey", heading);
