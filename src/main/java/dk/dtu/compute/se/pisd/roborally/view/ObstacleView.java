@@ -61,28 +61,28 @@ public class ObstacleView extends SpaceView implements ViewObserver {
             } else if (obstacle instanceof Wall) {
                 ImageView wall = new ImageView();
                 try {
-                    String imageFilePath = new File("images/wall.JPG").toURI().toString();
+                    String imageFilePath = new File("images/newWall.JPG").toURI().toString();
                     Image image = new Image(imageFilePath);
                     wall.setImage(image);
-                    wall.setFitWidth(60);
+                    wall.setFitWidth(10);
                     wall.setFitHeight(60);
                 } catch (Exception e) {
                 }
                 switch (obstacle.getHeading()) {
                     case NORTH -> {
-                        wall.setRotate(180);
+                        wall.setTranslateY(-30);
                     }
                     case SOUTH -> {
-                        wall.setRotate(0);
+                        wall.setTranslateY(30);
                     }
                     case EAST -> {
-                        wall.setRotate(-90);
+                        wall.setTranslateX(30);
                     }
                     case WEST -> {
-                        wall.setRotate(90);
+                        wall.setTranslateX(-30);
                     }
                 }
-                wall.setRotate((90*obstacle.getHeading().ordinal())%360);
+                wall.setRotate((90*obstacle.getHeading().ordinal())%360+90);
                 this.getChildren().add(wall);
             } else if (obstacle instanceof Gear) {
                 ImageView gear = new ImageView();
