@@ -329,11 +329,13 @@ public class AppController implements Observer {
 
         for (Space space : gameController.getCheckpointPositions()) {
             JSONObject jsonCheckpoint = new JSONObject();
+            JSONObject jsonPosition = new JSONObject();
 
-            jsonCheckpoint.put("x", space.x);
-            jsonCheckpoint.put("y", space.y);
+            jsonCheckpoint.put("x", Integer.toString(space.x));
+            jsonCheckpoint.put("y", Integer.toString(space.y));
 
-            jsonCheckpoints.add(jsonCheckpoint);
+            jsonPosition.put("position", jsonCheckpoint);
+            jsonCheckpoints.add(jsonPosition);
         }
 
         JSONObject jsonBoard = new JSONObject();
