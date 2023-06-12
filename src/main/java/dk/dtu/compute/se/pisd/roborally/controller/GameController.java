@@ -21,7 +21,6 @@
  */
 package dk.dtu.compute.se.pisd.roborally.controller;
 
-import dk.dtu.compute.se.pisd.roborally.RoboRally;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Checkpoint;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Conveyor;
@@ -32,7 +31,6 @@ import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -186,7 +184,7 @@ public class GameController {
      *
      * @return CommandCard
      */
-    private CommandCard generateRandomCommandCard() {
+    CommandCard generateRandomCommandCard() {
         Command[] commands = Command.values();
         int random = (int) (Math.random() * commands.length);
         return new CommandCard(commands[random]);
@@ -402,9 +400,9 @@ public class GameController {
                      neighbortarget.setPlayer(someplayer);
                  }
                }
+            PlayerCheckpoint(player);
             movePlayerOnConveyor(player);
             MovePlayerOnGear(player);
-            PlayerCheckpoint(player);
 
                 // XXX note that this removes an other player from the space, when there
                 //     is another player on the target. Eventually, this needs to be
@@ -501,7 +499,7 @@ public class GameController {
         Space newSpace = checkpointPositions.get(randomNumber);
         space.removeObstacle(index);
 
-        Obstacle obstacle = new Checkpoint(space, "Green", Heading.SOUTH);
+        Obstacle obstacle = new Checkpoint(space, Heading.SOUTH);
         newSpace.setObstacle(obstacle);
 
         appController.update(board);

@@ -20,4 +20,3 @@ target/
 *.pdf
 *.log
 DS_STORE
-save.json

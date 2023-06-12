@@ -45,7 +45,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.awt.*;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -171,16 +170,16 @@ public class AppController implements Observer {
                 System.out.println(jsonSpace.toString());
                 switch (type) {
                     case ("Conveyor") -> {
-                        obstacle = new Conveyor(space, "grey", heading);
+                        obstacle = new Conveyor(space, heading);
                     }
                     case ("Gear") -> {
-                        obstacle = new Gear(space, "red", heading);
+                        obstacle = new Gear(space, heading);
                     }
                     case ("Wall") -> {
-                        obstacle = new Wall(space, "Blue", heading);
+                        obstacle = new Wall(space, heading);
                     }
                     case ("Checkpoint") -> {
-                        obstacle = new Checkpoint(space, "Green", heading);
+                        obstacle = new Checkpoint(space, heading);
                     }
                 }
                 space.setObstacle(obstacle);
@@ -330,11 +329,13 @@ public class AppController implements Observer {
 
         for (Space space : gameController.getCheckpointPositions()) {
             JSONObject jsonCheckpoint = new JSONObject();
+            JSONObject jsonPosition = new JSONObject();
 
-            jsonCheckpoint.put("x", space.x);
-            jsonCheckpoint.put("y", space.y);
+            jsonCheckpoint.put("x", Integer.toString(space.x));
+            jsonCheckpoint.put("y", Integer.toString(space.y));
 
-            jsonCheckpoints.add(jsonCheckpoint);
+            jsonPosition.put("position", jsonCheckpoint);
+            jsonCheckpoints.add(jsonPosition);
         }
 
         JSONObject jsonBoard = new JSONObject();
@@ -454,16 +455,16 @@ public class AppController implements Observer {
 
             switch (type) {
                 case ("Conveyor") -> {
-                    obstacle = new Conveyor(space, "grey", heading);
+                    obstacle = new Conveyor(space, heading);
                 }
                 case ("Gear") -> {
-                    obstacle = new Gear(space, "red", heading);
+                    obstacle = new Gear(space, heading);
                 }
                 case ("Wall") -> {
-                    obstacle = new Wall(space, "Blue", heading);
+                    obstacle = new Wall(space, heading);
                 }
                 case ("Checkpoint") -> {
-                    obstacle = new Checkpoint(space, "Green", heading);
+                    obstacle = new Checkpoint(space, heading);
                 }
             }
             space.setObstacle(obstacle);

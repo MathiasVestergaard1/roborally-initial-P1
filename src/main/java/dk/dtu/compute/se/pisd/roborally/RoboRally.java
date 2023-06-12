@@ -27,12 +27,15 @@ import dk.dtu.compute.se.pisd.roborally.view.BoardView;
 import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * ...
@@ -58,6 +61,18 @@ public class RoboRally extends Application {
     @Override
     public void start(Stage primaryStage) {
         stage = primaryStage;
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Online?");
+        String s = "Do you want to play online?";
+        alert.setContentText(s);
+
+        Optional<ButtonType> alertResult = alert.showAndWait();
+
+        if ((alertResult.isPresent()) && (alertResult.get() == ButtonType.OK)) {
+            AppController.setOnlinePlay();
+        }
+
 
         AppController appController = new AppController(this);
 
