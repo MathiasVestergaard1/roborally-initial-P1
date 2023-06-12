@@ -62,6 +62,8 @@ public class RoboRally extends Application {
     public void start(Stage primaryStage) {
         stage = primaryStage;
 
+        AppController appController = new AppController(this);
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Online?");
         String s = "Do you want to play online?";
@@ -70,11 +72,8 @@ public class RoboRally extends Application {
         Optional<ButtonType> alertResult = alert.showAndWait();
 
         if ((alertResult.isPresent()) && (alertResult.get() == ButtonType.OK)) {
-            AppController.setOnlinePlay();
+            appController.setOnlinePlay();
         }
-
-
-        AppController appController = new AppController(this);
 
         // create the primary scene with the a menu bar and a pane for
         // the board view (which initially is empty); it will be filled

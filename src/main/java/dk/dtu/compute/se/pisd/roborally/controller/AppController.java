@@ -47,6 +47,13 @@ import org.json.simple.parser.ParseException;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.awt.*;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -64,6 +71,7 @@ public class AppController implements Observer {
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
     final private RoboRally roboRally;
     private String loadedFile = null;
+    private boolean onlinePlay = false;
     private GameController gameController;
 
     public AppController(@NotNull RoboRally roboRally) {
@@ -94,16 +102,21 @@ public class AppController implements Observer {
         JSONObject jsonFile;
         JSONObject boards = new JSONObject();
 
-        try {
-            FileReader reader = new FileReader("save.json");
-            JSONParser jsonParser = new JSONParser();
-            jsonFile = (JSONObject) jsonParser.parse(reader);
+        if (!onlinePlay) {
+            try {
+                FileReader reader = new FileReader("save.json");
+                JSONParser jsonParser = new JSONParser();
+                jsonFile = (JSONObject) jsonParser.parse(reader);
 
-            boards = (JSONObject) jsonFile.get("boards");
-            boardCount = boards.size();
-        } catch (IOException | NullPointerException ignored) {
-            defaultGame = true;
+                boards = (JSONObject) jsonFile.get("boards");
+                boardCount = boards.size();
+            } catch (IOException | NullPointerException ignored) {
+                defaultGame = true;
+            }
+        } else {
+           
         }
+
 
         if (boardCount == 0) {
             Alert alert = new Alert(AlertType.INFORMATION);
@@ -135,8 +148,8 @@ public class AppController implements Observer {
             }
 
             ChoiceDialog<String> dialogList = new ChoiceDialog<>(BOARDS_LIST.get(0), BOARDS_LIST);
-            dialogList.setTitle("Saves");
-            dialogList.setHeaderText("Select save to load");
+            dialogList.setTitle("Boards");
+            dialogList.setHeaderText("Select board to play on");
             Optional<String> resultList = dialogList.showAndWait();
 
             if (resultList.isEmpty()) {
@@ -151,6 +164,11 @@ public class AppController implements Observer {
             gameController.setCheckpointPositions((JSONArray) boardConfig.get("checkpoints"));
 
             JSONArray jsonObstacles = (JSONArray) boardConfig.get("obstacles");
+
+            /*
+                    A GUI that shows amount of players joined and the player limit,
+                    the "start game" button becomes available once the game is full.
+             */
 
             int no = result.get();
             for (int i = 0; i < no; i++) {
@@ -186,6 +204,10 @@ public class AppController implements Observer {
                 board.setObstacle();
             }
         }
+
+        /*
+                Send info to the server, about how the board is set up etc.
+         */
 
         gameController.startProgrammingPhase();
 
@@ -548,8 +570,106 @@ public class AppController implements Observer {
         }
     }
 
+    public void setOnlinePlay() {
+        this.onlinePlay = true;
+    }
+
+    public boolean isOnlinePlay() {
+        return this.onlinePlay;
+    }
+
     public boolean isGameRunning() {
         return gameController != null;
+    }
+
+    public static String executeGet(String targetURL, String urlParameters) {
+        HttpURLConnection connection = null;
+
+        try {
+            //Create connection
+            URL url = new URL(targetURL);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+
+            connection.setRequestProperty("Content-Length",
+                    Integer.toString(urlParameters.getBytes().length));
+            connection.setRequestProperty("Content-Language", "en-US");
+
+            connection.setUseCaches(false);
+            connection.setDoOutput(true);
+
+            //Send request
+            DataOutputStream wr = new DataOutputStream (
+                    connection.getOutputStream());
+            wr.writeBytes(urlParameters);
+            wr.close();
+
+            //Get Response
+            InputStream is = connection.getInputStream();
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
+            String line;
+            while ((line = rd.readLine()) != null) {
+                response.append(line);
+                response.append('\r');
+            }
+            rd.close();
+            return response.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+
+    public static String executePost(String targetURL, String urlParameters) {
+        HttpURLConnection connection = null;
+
+        try {
+            //Create connection
+            URL url = new URL(targetURL);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+
+            connection.setRequestProperty("Content-Length",
+                    Integer.toString(urlParameters.getBytes().length));
+            connection.setRequestProperty("Content-Language", "en-US");
+
+            connection.setUseCaches(false);
+            connection.setDoOutput(true);
+
+            //Send request
+            DataOutputStream wr = new DataOutputStream (
+                    connection.getOutputStream());
+            wr.writeBytes(urlParameters);
+            wr.close();
+
+            //Get Response
+            InputStream is = connection.getInputStream();
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
+            String line;
+            while ((line = rd.readLine()) != null) {
+                response.append(line);
+                response.append('\r');
+            }
+            rd.close();
+            return response.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
     }
 
 
