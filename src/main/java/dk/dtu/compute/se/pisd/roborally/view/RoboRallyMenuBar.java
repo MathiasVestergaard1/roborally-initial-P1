@@ -114,15 +114,28 @@ public class RoboRallyMenuBar extends MenuBar {
 
     public void update() {
         if (appController.isGameRunning()) {
-            newGame.setVisible(false);
-            stopGame.setVisible(true);
-            saveGame.setVisible(true);
-            loadGame.setVisible(false);
-        } else {
+            if (appController.isOnlinePlay()) {
+                newGame.setVisible(false);
+                stopGame.setVisible(true);
+                saveGame.setVisible(true);
+                loadGame.setVisible(false);
+            } else {
+                newGame.setVisible(false);
+                stopGame.setVisible(true);
+                saveGame.setVisible(true);
+                loadGame.setVisible(false);
+            }
+        } else if (appController.isOnlinePlay()) {
             newGame.setVisible(true);
             stopGame.setVisible(false);
             saveGame.setVisible(false);
             loadGame.setVisible(true);
+        } else {
+                newGame.setVisible(true);
+                stopGame.setVisible(false);
+                saveGame.setVisible(false);
+                loadGame.setVisible(true);
+            }
         }
     }
 
