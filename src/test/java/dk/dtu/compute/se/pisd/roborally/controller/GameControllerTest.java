@@ -43,7 +43,6 @@ class GameControllerTest {
     void tearDown() {
         gameController = null;
     }
-
     @Test
     void moveCurrentPlayerToSpace() {
         Board board = gameController.board;
@@ -73,14 +72,16 @@ class GameControllerTest {
     void movePlayerOnConveyor() {
         Board board = gameController.board;
         Player current = board.getCurrentPlayer();
-        Space space = board.getSpace(0,0);
+        Space space = board.getSpace(0,1);
         Conveyor conveyor = new Conveyor(space,Heading.SOUTH);
-
+        space.setObstacle(conveyor);
+        current.setSpace(space);
         gameController.movePlayerOnConveyor(current);
 
-        Assertions.assertEquals(current, board.getSpace(0,1).getPlayer(), "Player "+ current.getName() + " should beSpace (1,0)!");
-        Assertions.assertEquals(Heading.SOUTH, current.getHeading(), "Player 0 should be heading SOUTH!");
-        Assertions.assertNull(board.getSpace(0, 0).getPlayer(), "Space (0,0) should be empty!");
+
+        Assertions.assertEquals(board.getSpace(0,2), current.getSpace());
+        Assertions.assertEquals(Heading.SOUTH, current.getHeading());
+        Assertions.assertNull(board.getSpace(0, 0).getPlayer());
 
     }
     @Test
