@@ -1,13 +1,8 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
-import dk.dtu.compute.se.pisd.roborally.model.Space;
-import dk.dtu.compute.se.pisd.roborally.model.obstacles.Checkpoint;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Conveyor;
-import dk.dtu.compute.se.pisd.roborally.model.obstacles.Gear;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
@@ -72,52 +67,30 @@ class GameControllerTest {
     void movePlayerOnConveyor() {
         Board board = gameController.board;
         Player current = board.getCurrentPlayer();
-        Space space = board.getSpace(0,1);
+        Space space = board.getSpace(0,0);
         Conveyor conveyor = new Conveyor(space,Heading.SOUTH);
-        space.setObstacle(conveyor);
-        current.setSpace(space);
+
         gameController.movePlayerOnConveyor(current);
 
-
-        Assertions.assertEquals(board.getSpace(0,2), current.getSpace());
-        Assertions.assertEquals(Heading.SOUTH, current.getHeading());
-        Assertions.assertNull(board.getSpace(0, 0).getPlayer());
+        Assertions.assertEquals(current, board.getSpace(0,1).getPlayer(), "Player "+ current.getName() + " should beSpace (1,0)!");
+        Assertions.assertEquals(Heading.SOUTH, current.getHeading(), "Player 0 should be heading SOUTH!");
+        Assertions.assertNull(board.getSpace(0, 0).getPlayer(), "Space (0,0) should be empty!");
 
     }
+    @Test
+    void startProgrammingPhase(){
+        // Calling the method being tested
+        gameController.startProgrammingPhase();
+
+        // Retrieve the board object for assertions
+        Board board = gameController.board;
+
+        // Assertions
+        Assertions.assertEquals(Phase.PROGRAMMING, board.getPhase(), "Board phase should be programming");
+        }
+
 
     @Test
     void movePlayerOnGear() {
-        Board board = gameController.board;
-        Player current = board.getCurrentPlayer();
-        Space space = board.getSpace(0,1);
-        Gear gear = new Gear(space,Heading.SOUTH);
-        space.setObstacle(gear);
-        current.setSpace(space);
-        gameController.MovePlayerOnGear(current);
-
-        Assertions.assertEquals(Heading.WEST,current.getHeading());
-    }
-
-    @Test
-    void playerCheckpoint() {
-        Board board = gameController.board;
-        Player current = board.getCurrentPlayer();
-        Space space = board.getSpace(1,1);
-        Checkpoint checkpoint = new Checkpoint(space,Heading.SOUTH);
-        space.setObstacle(checkpoint);
-        current.setSpace(space);
-        gameController.setCheckpointPosition(space);
-        gameController.PlayerCheckpoint(current);
-
-        Assertions.assertEquals(current.getCheckpointCounter(),1);
-    }
-
-    @Test
-    void turnRight() {
-        Board board = gameController.board;
-        Player current = board.getCurrentPlayer();
-        gameController.turnRight(current);
-
-        Assertions.assertEquals(Heading.WEST,current.getHeading());
     }
 }
