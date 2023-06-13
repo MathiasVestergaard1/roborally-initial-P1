@@ -29,6 +29,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -72,6 +73,18 @@ public class RoboRally extends Application {
         Optional<ButtonType> alertResult = alert.showAndWait();
 
         if ((alertResult.isPresent()) && (alertResult.get() == ButtonType.OK)) {
+            TextInputDialog textDialog = new TextInputDialog("127.0.0.1");
+            textDialog.setTitle("IP");
+            textDialog.setHeaderText("Enter ip address name");
+
+            Optional<String> result = textDialog.showAndWait();
+
+            if (result.isPresent()) {
+                appController.setIp(result.get());
+            } else {
+                start(primaryStage);
+                return;
+            }
             appController.setOnlinePlay();
         }
 

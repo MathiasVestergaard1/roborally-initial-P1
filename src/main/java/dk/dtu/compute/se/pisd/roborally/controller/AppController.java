@@ -74,6 +74,7 @@ public class AppController implements Observer {
     private String loadedFile = null;
     private String originBoard = null;
     private boolean onlinePlay = false;
+    private String ip = "";
     private GameController gameController;
 
     public AppController(@NotNull RoboRally roboRally) {
@@ -116,7 +117,7 @@ public class AppController implements Observer {
                 defaultGame = true;
             }
         } else {
-            String response = executeGet("http://127.0.0.1:8080/roborally/boards", "");
+            String response = executeGet("http://" + this.ip + ":8080/roborally/boards", "");
 
             JSONParser jsonParser = new JSONParser();
             boards = (JSONObject) jsonParser.parse(response);
@@ -169,7 +170,7 @@ public class AppController implements Observer {
             this.originBoard = resultList.get();
 
             if (onlinePlay) {
-                String response = executeGet("http://127.0.0.1:8080/roborally/getGame", "name=" + resultList.get());
+                String response = executeGet("http://" + this.ip + ":8080/roborally/getGame", "name=" + resultList.get());
 
                 JSONParser jsonParser = new JSONParser();
                 boardConfig = (JSONObject) jsonParser.parse(response);
@@ -260,7 +261,7 @@ public class AppController implements Observer {
                 saves = new JSONObject();
             }
         } else {
-            String response = executeGet("http://127.0.0.1:8080/roborally/saves", "");
+            String response = executeGet("http://" + this.ip + ":8080/roborally/saves", "");
 
             JSONParser jsonParser = new JSONParser();
             saves = (JSONObject) jsonParser.parse(response);
@@ -414,13 +415,13 @@ public class AppController implements Observer {
             JSONObject postSave = new JSONObject();
             postSave.put(saveName, save);
 
-            executePost("http://127.0.0.1:8080/roborally/overwriteGame", postSave.toJSONString());
+            executePost("http://" + this.ip + ":8080/roborally/overwriteGame", postSave.toJSONString());
             return;
         } else if (onlinePlay) {
             JSONObject postSave = new JSONObject();
             postSave.put(saveName, save);
 
-            executePost("http://127.0.0.1:8080/roborally/saveGame", postSave.toJSONString());
+            executePost("http://" + this.ip + ":8080/roborally/saveGame", postSave.toJSONString());
             return;
         }
 
@@ -463,7 +464,7 @@ public class AppController implements Observer {
                     return;
                 }
         } else {
-            String response = executeGet("http://127.0.0.1:8080/roborally/saves", "");
+            String response = executeGet("http://" + this.ip + ":8080/roborally/saves", "");
 
             JSONParser jsonParser = new JSONParser();
             saves = (JSONObject) jsonParser.parse(response);
@@ -633,7 +634,7 @@ public class AppController implements Observer {
     }
 
     public void joinGame() throws ParseException {
-        String response = executeGet("http://127.0.0.1:8080/roborally/games", "");
+        String response = executeGet("http://" + this.ip + ":8080/roborally/games", "");
 
         JSONParser jsonParser = new JSONParser();
         JSONObject games = (JSONObject) jsonParser.parse(response);
@@ -662,6 +663,14 @@ public class AppController implements Observer {
 
     public boolean isGameRunning() {
         return gameController != null;
+    }
+
+    public String getIp() {
+        return this.ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
     public static String executeGet(String targetURL, String urlParameters) {
