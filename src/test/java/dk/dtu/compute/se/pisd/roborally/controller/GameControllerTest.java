@@ -1,25 +1,32 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
+import dk.dtu.compute.se.pisd.roborally.RoboRally;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.Conveyor;
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 class GameControllerTest {
 
     private final int TEST_WIDTH = 8;
     private final int TEST_HEIGHT = 8;
-
     private GameController gameController;
+    private RoboRally roboRally = new RoboRally();
 
     @BeforeEach
     void setUp() {
         Board board = new Board(TEST_WIDTH, TEST_HEIGHT);
-        gameController = new GameController(board);
+        AppController appController = new AppController(this.roboRally);
+        gameController = new GameController(board,appController);
         for (int i = 0; i < 6; i++) {
             Player player = new Player(board, null,"Player " + i);
             board.addPlayer(player);
@@ -59,4 +66,22 @@ class GameControllerTest {
         Assertions.assertNull(board.getSpace(0, 0).getPlayer(), "Space (0,0) should be empty!");
     }
 
+    @Test
+    void movePlayerOnConveyor() {
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        Space space = board.getSpace(0,0);
+        Conveyor conveyor = new Conveyor(space,Heading.SOUTH);
+
+        gameController.movePlayerOnConveyor(current);
+
+        Assertions.assertEquals(current, board.getSpace(0,1).getPlayer(), "Player "+ current.getName() + " should beSpace (1,0)!");
+        Assertions.assertEquals(Heading.SOUTH, current.getHeading(), "Player 0 should be heading SOUTH!");
+        Assertions.assertNull(board.getSpace(0, 0).getPlayer(), "Space (0,0) should be empty!");
+
+    }
+
+    @Test
+    void movePlayerOnGear() {
+    }
 }
