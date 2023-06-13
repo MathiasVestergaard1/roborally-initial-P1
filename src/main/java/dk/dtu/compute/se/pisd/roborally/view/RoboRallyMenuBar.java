@@ -97,17 +97,19 @@ public class RoboRallyMenuBar extends MenuBar {
                 throw new RuntimeException(ex);
             }
         });
-        controlMenu.getItems().add(joinGame);
+
+        controlMenu.getItems().add(loadGame);
+
 
         joinGame = new MenuItem("Join Game");
         joinGame.setOnAction( e -> {
             try {
                 this.appController.joinGame();
-            } catch (IOException | ParseException ex) {
+            } catch (ParseException ex) {
                 throw new RuntimeException(ex);
             }
         });
-        controlMenu.getItems().add(loadGame);
+        controlMenu.getItems().add(joinGame);
 
         exitApp = new MenuItem("Exit");
         exitApp.setOnAction( e -> {

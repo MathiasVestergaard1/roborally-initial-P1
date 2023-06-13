@@ -404,22 +404,34 @@ public class AppController implements Observer {
         JSONObject jsonFile;
         JSONObject saves;
 
-        try {
-            FileReader reader = new FileReader("save.json");
-            JSONParser jsonParser = new JSONParser();
-            jsonFile = (JSONObject) jsonParser.parse(reader);
+        if (!onlinePlay) {
+            try {
+                    FileReader reader = new FileReader("save.json");
+                    JSONParser jsonParser = new JSONParser();
+                    jsonFile = (JSONObject) jsonParser.parse(reader);
 
-            saves = (JSONObject) jsonFile.get("saves");
+                    saves = (JSONObject) jsonFile.get("saves");
+                    saveCount = saves.size();
+                } catch (IOException | NullPointerException ignored) {
+                    Alert alert = new Alert(AlertType.INFORMATION);
+                    alert.setTitle("No saves found");
+                    alert.setHeaderText("No saves found");
+                    String s ="You don't have any saved games in your save.json file";
+                    alert.setContentText(s);
+                    alert.show();
+                    return;
+                }
+        } else {
+            String response = executeGet("http://127.0.0.1:8080/roborally/boards", "");
+
+            JSONParser jsonParser = new JSONParser();
+            saves = (JSONObject) jsonParser.parse(response);
+
             saveCount = saves.size();
-        } catch (IOException | NullPointerException ignored) {
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("No saves found");
-            alert.setHeaderText("No saves found");
-            String s ="You don't have any saved games in your save.json file";
-            alert.setContentText(s);
-            alert.show();
-            return;
+            System.out.println(response);
         }
+
+
 
         if (saveCount == 0) {
             Alert alert = new Alert(AlertType.INFORMATION);
@@ -574,6 +586,26 @@ public class AppController implements Observer {
         // after the option to save the game
         if (gameController == null || stopGame()) {
             Platform.exit();
+        }
+    }
+
+    public void joinGame() throws ParseException {
+        String response = executeGet("http://127.0.0.1:8080/roborally/games", "");
+
+        JSONParser jsonParser = new JSONParser();
+        JSONObject games = (JSONObject) jsonParser.parse(response);
+
+        int gameCount = games.size();
+        System.out.println(response);
+
+        if (gameCount == 0) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("No games found");
+            alert.setHeaderText("No games found");
+            String s = "There are no games available on the server";
+            alert.setContentText(s);
+            alert.show();
+            return;
         }
     }
 
