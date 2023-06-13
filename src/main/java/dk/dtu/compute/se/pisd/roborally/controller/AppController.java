@@ -52,6 +52,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.nio.file.Files;
@@ -114,7 +115,13 @@ public class AppController implements Observer {
                 defaultGame = true;
             }
         } else {
-           
+            String response = executeGet("http://127.0.0.1:8080/roborally/boards", "");
+
+            JSONParser jsonParser = new JSONParser();
+            boards = (JSONObject) jsonParser.parse(response);
+
+            boardCount = boards.size();
+            System.out.println(response);
         }
 
 
@@ -587,35 +594,18 @@ public class AppController implements Observer {
 
         try {
             //Create connection
-            URL url = new URL(targetURL);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Content-Type",
-                    "application/x-www-form-urlencoded");
+            URL yahoo = new URL(targetURL + urlParameters);
+            URLConnection yc = yahoo.openConnection();
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(
+                            yc.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
 
-            connection.setRequestProperty("Content-Length",
-                    Integer.toString(urlParameters.getBytes().length));
-            connection.setRequestProperty("Content-Language", "en-US");
-
-            connection.setUseCaches(false);
-            connection.setDoOutput(true);
-
-            //Send request
-            DataOutputStream wr = new DataOutputStream (
-                    connection.getOutputStream());
-            wr.writeBytes(urlParameters);
-            wr.close();
-
-            //Get Response
-            InputStream is = connection.getInputStream();
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-            StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
-            String line;
-            while ((line = rd.readLine()) != null) {
-                response.append(line);
-                response.append('\r');
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
             }
-            rd.close();
+            in.close();
             return response.toString();
         } catch (Exception e) {
             e.printStackTrace();
