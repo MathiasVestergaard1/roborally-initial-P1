@@ -135,6 +135,10 @@ public class Player extends Subject {
         checkpointCounter++;
     }
 
+    public void setCheckpointCounter(int points) {
+        this.checkpointCounter = points;
+    }
+
 
     public CommandCardField getProgramField(int i) {
         return program[i];

@@ -32,6 +32,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -134,14 +135,31 @@ public class GameController {
         setCheckpointPositions(checkpoints);
 
         for (Object player : players) {
+            System.out.println((String) ((JSONObject) player).get("ID"));
             Player boardPlayer = board.getPlayer(Integer.parseInt((String) ((JSONObject) player).get("ID")));
-            ArrayList<String> playerHand = (ArrayList<String>) ((JSONObject) player).get("playerHand");
-            ArrayList<String> programHand = (ArrayList<String>) ((JSONObject) player).get("programHand");
+
+            String playerHandString = (String) ((JSONObject) player).get("playerHand");
+            playerHandString = playerHandString.substring(1);
+            playerHandString = playerHandString.substring(0, playerHandString.length() - 1);  ;
+
+            String[] playerHandSplit = playerHandString.split(", ");
+
+            ArrayList<String> playerHand = new ArrayList<>(
+                    Arrays.asList(playerHandSplit));
+
+            String programHandString = (String) ((JSONObject) player).get("programHand");
+            programHandString = programHandString.substring(1);
+            programHandString = programHandString.substring(0, programHandString.length() - 1);  ;
+
+            String[] programHandSplit = programHandString.split(", ");
+
+            ArrayList<String> programHand = new ArrayList<>(
+                    Arrays.asList(programHandSplit));
 
             for (int j = 0; j < Player.NO_REGISTERS; j++) {
                 CommandCardField field = boardPlayer.getProgramField(j);
                 String stringCard = programHand.get(j);
-                if (stringCard == null) {
+                if (stringCard == null || stringCard.equals("null")) {
                     field.setCard(null);
                 } else {
                     CommandCard commandCard = new CommandCard(Command.valueOf(programHand.get(j)));

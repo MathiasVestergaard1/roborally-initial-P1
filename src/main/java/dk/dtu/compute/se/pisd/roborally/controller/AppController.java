@@ -72,6 +72,7 @@ public class AppController implements Observer {
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
     final private RoboRally roboRally;
     private String loadedFile = null;
+    private String originBoard = null;
     private boolean onlinePlay = false;
     private GameController gameController;
 
@@ -121,7 +122,6 @@ public class AppController implements Observer {
             boards = (JSONObject) jsonParser.parse(response);
 
             boardCount = boards.size();
-            System.out.println(response);
         }
 
 
@@ -163,7 +163,20 @@ public class AppController implements Observer {
                 gameController = null;
                 return;
             }
-            JSONObject boardConfig = (JSONObject) boards.get(resultList.get());
+
+            JSONObject boardConfig = new JSONObject();
+
+            this.originBoard = resultList.get();
+
+            if (onlinePlay) {
+                String response = executeGet("http://127.0.0.1:8080/roborally/getGame", "name=" + resultList.get());
+
+                JSONParser jsonParser = new JSONParser();
+                boardConfig = (JSONObject) jsonParser.parse(response);
+            } else {
+                boardConfig = (JSONObject) boards.get(resultList.get());
+            }
+
             JSONObject jsonBoard = (JSONObject) boardConfig.get("board");
 
             Board board = new Board(Integer.parseInt((String) jsonBoard.get("width")), Integer.parseInt((String) jsonBoard.get("height")));
@@ -235,16 +248,26 @@ public class AppController implements Observer {
         JSONObject jsonFile = new JSONObject();
         JSONObject saves;
 
-        try {
-            FileReader reader = new FileReader("save.json");
-            JSONParser jsonParser = new JSONParser();
-            jsonFile = (JSONObject) jsonParser.parse(reader);
+        if (!onlinePlay) {
+            try {
+                FileReader reader = new FileReader("save.json");
+                JSONParser jsonParser = new JSONParser();
+                jsonFile = (JSONObject) jsonParser.parse(reader);
 
-            saves = (JSONObject) jsonFile.get("saves");
+                saves = (JSONObject) jsonFile.get("saves");
+                saveCount = saves.size();
+            } catch (IOException | NullPointerException ignored) {
+                saves = new JSONObject();
+            }
+        } else {
+            String response = executeGet("http://127.0.0.1:8080/roborally/saves", "");
+
+            JSONParser jsonParser = new JSONParser();
+            saves = (JSONObject) jsonParser.parse(response);
+
             saveCount = saves.size();
-        } catch (IOException | NullPointerException ignored) {
-            saves = new JSONObject();
         }
+
 
         String saveName = (loadedFile != null) ? loadedFile :  "save" + (saveCount + 1);
 
@@ -260,6 +283,8 @@ public class AppController implements Observer {
             return;
         }
 
+        boolean overwrite = false;
+
         if (saves.get(saveName) != null) {
             Alert alert = new Alert(AlertType.CONFIRMATION);
             alert.setTitle("Save");
@@ -272,6 +297,7 @@ public class AppController implements Observer {
                 saveGame();
                 return;
             }
+            overwrite = true;
         }
 
         loadedFile = saveName;
@@ -299,6 +325,7 @@ public class AppController implements Observer {
             jsonPlayer.put("ID", Integer.toString(i));
             jsonPlayer.put("heading", player.getHeading().toString());
             jsonPlayer.put("position", jsonSpace);
+            jsonPlayer.put("points", Integer.toString(player.getCheckpointCounter()));
 
             CommandCardField[] playerCards = player.getCardFields();
             CommandCardField[] programCards = player.getProgramFields();
@@ -322,8 +349,8 @@ public class AppController implements Observer {
 
             }
 
-            jsonPlayer.put("playerHand", playerCardsArray);
-            jsonPlayer.put("programHand", programCardsArray);
+            jsonPlayer.put("playerHand", playerCardsArray.toString());
+            jsonPlayer.put("programHand", programCardsArray.toString());
 
             jsonPlayers.add(jsonPlayer);
         }
@@ -375,6 +402,7 @@ public class AppController implements Observer {
         jsonBoard.put("currentPlayer", Integer.toString(gameController.board.getPlayerNumber(gameController.board.getCurrentPlayer())));
         jsonBoard.put("currentStep", Integer.toString(gameController.board.getStep()));
         jsonBoard.put("stepMode", gameController.board.isStepMode());
+        jsonBoard.put("originBoard", this.originBoard);
 
         JSONObject save = new JSONObject();
         save.put("board", jsonBoard);
@@ -382,12 +410,25 @@ public class AppController implements Observer {
         save.put("obstacles", jsonObstacles);
         save.put("checkpoints", jsonCheckpoints);
 
+        if (onlinePlay && overwrite) {
+            JSONObject postSave = new JSONObject();
+            postSave.put(saveName, save);
+
+            executePost("http://127.0.0.1:8080/roborally/overwriteGame", postSave.toJSONString());
+            return;
+        } else if (onlinePlay) {
+            JSONObject postSave = new JSONObject();
+            postSave.put(saveName, save);
+
+            executePost("http://127.0.0.1:8080/roborally/saveGame", postSave.toJSONString());
+            return;
+        }
+
         saves.put(saveName, save);
 
         jsonFile.put("saves", saves);
 
         Files.write(Paths.get("save.json"), jsonFile.toJSONString().getBytes());
-        System.out.println(jsonFile.toJSONString());
     }
 
     /**
@@ -422,7 +463,7 @@ public class AppController implements Observer {
                     return;
                 }
         } else {
-            String response = executeGet("http://127.0.0.1:8080/roborally/boards", "");
+            String response = executeGet("http://127.0.0.1:8080/roborally/saves", "");
 
             JSONParser jsonParser = new JSONParser();
             saves = (JSONObject) jsonParser.parse(response);
@@ -442,7 +483,6 @@ public class AppController implements Observer {
             alert.show();
             return;
         }
-
         ArrayList<String> SAVES_LIST = new ArrayList<String>();
 
         for (Object o : saves.keySet()) {
@@ -470,6 +510,8 @@ public class AppController implements Observer {
         loadedFile = result.get();
         JSONObject jsonBoard = (JSONObject) save.get("board");
 
+        this.originBoard = (String) jsonBoard.get("originBoard");
+
         Board board = new Board(Integer.parseInt((String) jsonBoard.get("width")), Integer.parseInt((String) jsonBoard.get("height")));
         gameController = new GameController(board, this);
 
@@ -483,6 +525,7 @@ public class AppController implements Observer {
             board.addPlayer(player);
             player.setSpace(board.getSpace(Integer.parseInt((String) jsonSpace.get("x")), Integer.parseInt((String) jsonSpace.get("y"))));
             player.setHeading(Heading.valueOf((String) jsonPlayer.get("heading")));
+            player.setCheckpointCounter(Integer.parseInt((String) jsonPlayer.get("points")));
         }
 
         for (Object o : jsonObstacles) {
@@ -626,7 +669,7 @@ public class AppController implements Observer {
 
         try {
             //Create connection
-            URL yahoo = new URL(targetURL + urlParameters);
+            URL yahoo = new URL(targetURL + "?" + urlParameters);
             URLConnection yc = yahoo.openConnection();
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(
@@ -649,8 +692,10 @@ public class AppController implements Observer {
         }
     }
 
-    public static String executePost(String targetURL, String urlParameters) {
+    public static String executePost(String targetURL, String body) {
         HttpURLConnection connection = null;
+
+        System.out.println(body);
 
         try {
             //Create connection
@@ -658,10 +703,10 @@ public class AppController implements Observer {
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type",
-                    "application/x-www-form-urlencoded");
+                    "application/json");
 
             connection.setRequestProperty("Content-Length",
-                    Integer.toString(urlParameters.getBytes().length));
+                    Integer.toString(body.getBytes().length));
             connection.setRequestProperty("Content-Language", "en-US");
 
             connection.setUseCaches(false);
@@ -670,7 +715,7 @@ public class AppController implements Observer {
             //Send request
             DataOutputStream wr = new DataOutputStream (
                     connection.getOutputStream());
-            wr.writeBytes(urlParameters);
+            wr.writeBytes(body);
             wr.close();
 
             //Get Response
