@@ -119,7 +119,9 @@ public class GameController {
             this.checkpointPositions.add(space);
         }
     }
-
+    public void setCheckpointPosition(Space space){
+        this.checkpointPositions.add(space);
+    }
     public ArrayList<Space> getCheckpointPositions() {
         return this.checkpointPositions;
     }
@@ -487,8 +489,8 @@ public class GameController {
 
 
     public void spawnNewCheckpoint(Space space, int index) {
-        int randomNumber = (int) (Math.random() * checkpointPositions.size());
-        if (checkpointPositions.get(randomNumber) == space) {
+        int randomNumber = (int) (Math.random() * (checkpointPositions.size()-1));
+        if (checkpointPositions.get(randomNumber) == space && checkpointPositions.size() > 1) {
             if (randomNumber == 0) {
                 randomNumber++;
             } else {
