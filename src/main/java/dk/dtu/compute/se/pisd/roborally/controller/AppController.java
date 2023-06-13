@@ -52,6 +52,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.nio.file.Files;
@@ -114,7 +115,13 @@ public class AppController implements Observer {
                 defaultGame = true;
             }
         } else {
-           
+            String response = executeGet("http://127.0.0.1:8080/roborally/boards", "");
+
+            JSONParser jsonParser = new JSONParser();
+            boards = (JSONObject) jsonParser.parse(response);
+
+            boardCount = boards.size();
+            System.out.println(response);
         }
 
 
@@ -397,22 +404,34 @@ public class AppController implements Observer {
         JSONObject jsonFile;
         JSONObject saves;
 
-        try {
-            FileReader reader = new FileReader("save.json");
-            JSONParser jsonParser = new JSONParser();
-            jsonFile = (JSONObject) jsonParser.parse(reader);
+        if (!onlinePlay) {
+            try {
+                    FileReader reader = new FileReader("save.json");
+                    JSONParser jsonParser = new JSONParser();
+                    jsonFile = (JSONObject) jsonParser.parse(reader);
 
-            saves = (JSONObject) jsonFile.get("saves");
+                    saves = (JSONObject) jsonFile.get("saves");
+                    saveCount = saves.size();
+                } catch (IOException | NullPointerException ignored) {
+                    Alert alert = new Alert(AlertType.INFORMATION);
+                    alert.setTitle("No saves found");
+                    alert.setHeaderText("No saves found");
+                    String s ="You don't have any saved games in your save.json file";
+                    alert.setContentText(s);
+                    alert.show();
+                    return;
+                }
+        } else {
+            String response = executeGet("http://127.0.0.1:8080/roborally/boards", "");
+
+            JSONParser jsonParser = new JSONParser();
+            saves = (JSONObject) jsonParser.parse(response);
+
             saveCount = saves.size();
-        } catch (IOException | NullPointerException ignored) {
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("No saves found");
-            alert.setHeaderText("No saves found");
-            String s ="You don't have any saved games in your save.json file";
-            alert.setContentText(s);
-            alert.show();
-            return;
+            System.out.println(response);
         }
+
+
 
         if (saveCount == 0) {
             Alert alert = new Alert(AlertType.INFORMATION);
@@ -570,6 +589,26 @@ public class AppController implements Observer {
         }
     }
 
+    public void joinGame() throws ParseException {
+        String response = executeGet("http://127.0.0.1:8080/roborally/games", "");
+
+        JSONParser jsonParser = new JSONParser();
+        JSONObject games = (JSONObject) jsonParser.parse(response);
+
+        int gameCount = games.size();
+        System.out.println(response);
+
+        if (gameCount == 0) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("No games found");
+            alert.setHeaderText("No games found");
+            String s = "There are no games available on the server";
+            alert.setContentText(s);
+            alert.show();
+            return;
+        }
+    }
+
     public void setOnlinePlay() {
         this.onlinePlay = true;
     }
@@ -587,35 +626,18 @@ public class AppController implements Observer {
 
         try {
             //Create connection
-            URL url = new URL(targetURL);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Content-Type",
-                    "application/x-www-form-urlencoded");
+            URL yahoo = new URL(targetURL + urlParameters);
+            URLConnection yc = yahoo.openConnection();
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(
+                            yc.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
 
-            connection.setRequestProperty("Content-Length",
-                    Integer.toString(urlParameters.getBytes().length));
-            connection.setRequestProperty("Content-Language", "en-US");
-
-            connection.setUseCaches(false);
-            connection.setDoOutput(true);
-
-            //Send request
-            DataOutputStream wr = new DataOutputStream (
-                    connection.getOutputStream());
-            wr.writeBytes(urlParameters);
-            wr.close();
-
-            //Get Response
-            InputStream is = connection.getInputStream();
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-            StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
-            String line;
-            while ((line = rd.readLine()) != null) {
-                response.append(line);
-                response.append('\r');
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
             }
-            rd.close();
+            in.close();
             return response.toString();
         } catch (Exception e) {
             e.printStackTrace();

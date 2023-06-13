@@ -51,6 +51,8 @@ public class RoboRallyMenuBar extends MenuBar {
 
     private MenuItem exitApp;
 
+    private MenuItem joinGame;
+
     public RoboRallyMenuBar(AppController appController) {
         this.appController = appController;
 
@@ -95,7 +97,19 @@ public class RoboRallyMenuBar extends MenuBar {
                 throw new RuntimeException(ex);
             }
         });
+
         controlMenu.getItems().add(loadGame);
+
+
+        joinGame = new MenuItem("Join Game");
+        joinGame.setOnAction( e -> {
+            try {
+                this.appController.joinGame();
+            } catch (ParseException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        controlMenu.getItems().add(joinGame);
 
         exitApp = new MenuItem("Exit");
         exitApp.setOnAction( e -> {
@@ -119,22 +133,26 @@ public class RoboRallyMenuBar extends MenuBar {
                 stopGame.setVisible(true);
                 saveGame.setVisible(true);
                 loadGame.setVisible(false);
+                joinGame.setVisible(false);
             } else {
                 newGame.setVisible(false);
                 stopGame.setVisible(true);
                 saveGame.setVisible(true);
                 loadGame.setVisible(false);
+                joinGame.setVisible(false);
             }
         } else if (appController.isOnlinePlay()) {
             newGame.setVisible(true);
             stopGame.setVisible(false);
             saveGame.setVisible(false);
             loadGame.setVisible(true);
+            joinGame.setVisible(true);
         } else {
                 newGame.setVisible(true);
                 stopGame.setVisible(false);
                 saveGame.setVisible(false);
                 loadGame.setVisible(true);
+                joinGame.setVisible(false);
             }
         }
     }
