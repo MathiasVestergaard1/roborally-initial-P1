@@ -4,6 +4,12 @@ import dk.dtu.compute.se.pisd.roborally.RoboRally;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Conveyor;
 import dk.dtu.compute.se.pisd.roborally.model.obstacles.Obstacle;
+import dk.dtu.compute.se.pisd.roborally.model.Board;
+import dk.dtu.compute.se.pisd.roborally.model.Heading;
+import dk.dtu.compute.se.pisd.roborally.model.Player;
+import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.model.obstacles.*;
+import javafx.scene.layout.BorderPane;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -92,5 +98,49 @@ class GameControllerTest {
 
     @Test
     void movePlayerOnGear() {
+
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        Space space = board.getSpace(0,1);
+        Gear gear = new Gear(space,Heading.SOUTH);
+        space.setObstacle(gear);
+        current.setSpace(space);
+        gameController.MovePlayerOnGear(current);
+
+        Assertions.assertEquals(Heading.WEST,current.getHeading());
+    }
+
+    @Test
+    void playerCheckpoint() {
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        current.IncreaseCheckpoint();
+
+        Assertions.assertEquals(current.getCheckpointCounter(),1);
+    }
+
+    @Test
+    void turnRight() {
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        gameController.turnRight(current);
+
+        Assertions.assertEquals(Heading.WEST,current.getHeading());
+
+    }
+
+    @Test
+    void wallCheck() {
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        Space space = board.getSpace(1,1);
+        Wall wall = new Wall(space,Heading.SOUTH);
+        space.setObstacle(wall);
+        current.setSpace(space);
+        gameController.wallCheck(current);
+        gameController.moveForward(current);
+
+        Assertions.assertEquals(current, board.getSpace(1,1).getPlayer());
+        Assertions.assertEquals(current.getHeading(),Heading.SOUTH);
     }
 }
