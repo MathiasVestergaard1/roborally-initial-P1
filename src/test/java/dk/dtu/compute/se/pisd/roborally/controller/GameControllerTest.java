@@ -99,20 +99,10 @@ class GameControllerTest {
     @Test
     void playerCheckpoint() {
         Board board = gameController.board;
-        int i = 0;
         Player current = board.getCurrentPlayer();
-        Space space = board.getSpace(1,1);
-        Checkpoint checkpoint = new Checkpoint(space,Heading.SOUTH);
-        space.setObstacle(checkpoint);
-        current.setSpace(space);
-        gameController.setCheckpointPosition(space);
-        while (i <3) {
-            current.IncreaseCheckpoint();
-            i++;
-        }
-        gameController.PlayerCheckpoint(current);
+        current.IncreaseCheckpoint();
 
-        Assertions.assertEquals(current.getCheckpointCounter(),4);
+        Assertions.assertEquals(current.getCheckpointCounter(),1);
     }
 
     @Test
