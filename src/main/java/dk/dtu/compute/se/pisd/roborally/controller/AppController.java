@@ -479,7 +479,7 @@ public class AppController implements Observer {
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("No saves found");
             alert.setHeaderText("No saves found");
-            String s ="You don't have any saved games in your save.json file";
+            String s ="No saved games were found";
             alert.setContentText(s);
             alert.show();
             return;
