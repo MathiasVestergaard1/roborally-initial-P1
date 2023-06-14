@@ -568,6 +568,9 @@ public class GameController {
 
         ArrayList<Obstacle> obstacles = space.getObstacle();
         for (Obstacle obstacle : obstacles) {
+            if (obstacle != null && obstacle instanceof Conveyor) {
+                playerHeading = obstacle.getHeading();
+            }
             if (obstacle != null && obstacle instanceof Wall) {
                 Heading wallHeading = obstacle.getHeading();
                 if (wallHeading == playerHeading) {
