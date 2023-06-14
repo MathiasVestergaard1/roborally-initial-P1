@@ -444,6 +444,10 @@ public class GameController {
      * @author Mads Halberg
      */
     public void movePlayerOnConveyor(Player player) {
+        boolean wallCheck = wallCheck(player);
+        if(wallCheck){
+            return;
+        }
         Space space = player.getSpace();
         if (player != null && player.board == board && space != null) {
             ArrayList<Obstacle> obstacles = space.getObstacle();
